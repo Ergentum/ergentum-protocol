@@ -1,0 +1,325 @@
+{
+  "preamble": {
+    "title": "daazlabs/ergentum",
+    "description": "Aiken contracts for project 'daazlabs/ergentum'",
+    "version": "0.0.0",
+    "plutusVersion": "v2",
+    "compiler": {
+      "name": "Aiken",
+      "version": "v1.1.9+2217206"
+    },
+    "license": "Apache-2.0"
+  },
+  "validators": [
+    {
+      "title": "ergentum_bots.ergentum_bots.spend",
+      "datum": {
+        "title": "_datum",
+        "schema": {
+          "$ref": "#/definitions/Data"
+        }
+      },
+      "redeemer": {
+        "title": "datum",
+        "schema": {
+          "$ref": "#/definitions/ergentum_bots~1BotDatum"
+        }
+      },
+      "compiledCode": "5901e601000032323232323225333002323232323253323300830013009375400426466446464a66601a6004601c6ea80204c8c8c8c8c8c8c8c8c8c94ccc068c0700084c94ccc060c03400454ccc06cc068dd50030060b0a99980c18088008a99980d980d1baa00600c16153330183370e90020008a99980d980d1baa00600c16153330183370e90030008a99980d980d1baa00600c16153330183370e90040008a99980d980d1baa00600c16163018375400a2c64a66603460320022a66602e66e252004301800116130103018001163754603400260340046eb4c060004c060008c058004c058008dd7180a000980a0011bae3012001300f37540102c264646464a666020600a0022a66602066e2520c801375a6028602a602a602a60246ea802c4cc008010dd7180198091baa00b14a02a66602060120022660040086eb8c00cc048dd50058998010021bae30033012375401660206ea801888c8cc00400400c894ccc05400452809991299980a19b8f00200514a22660080080026eb8c058004c05c0048c048c04c004dd618081808980898089808980898089808980898071baa3010300e37540106e1d2000300d001300d300e001300a37540046e1d200216300a300b0033009002300800230080013004375400229309b2b2b9a5573aaae7955cfaba157441",
+      "hash": "172da4f262e2da21d490800679f652e6b451999fc8a014f284eb2149"
+    },
+    {
+      "title": "ergentum_bots.ergentum_bots.else",
+      "redeemer": {
+        "schema": {}
+      },
+      "compiledCode": "5901e601000032323232323225333002323232323253323300830013009375400426466446464a66601a6004601c6ea80204c8c8c8c8c8c8c8c8c8c94ccc068c0700084c94ccc060c03400454ccc06cc068dd50030060b0a99980c18088008a99980d980d1baa00600c16153330183370e90020008a99980d980d1baa00600c16153330183370e90030008a99980d980d1baa00600c16153330183370e90040008a99980d980d1baa00600c16163018375400a2c64a66603460320022a66602e66e252004301800116130103018001163754603400260340046eb4c060004c060008c058004c058008dd7180a000980a0011bae3012001300f37540102c264646464a666020600a0022a66602066e2520c801375a6028602a602a602a60246ea802c4cc008010dd7180198091baa00b14a02a66602060120022660040086eb8c00cc048dd50058998010021bae30033012375401660206ea801888c8cc00400400c894ccc05400452809991299980a19b8f00200514a22660080080026eb8c058004c05c0048c048c04c004dd618081808980898089808980898089808980898071baa3010300e37540106e1d2000300d001300d300e001300a37540046e1d200216300a300b0033009002300800230080013004375400229309b2b2b9a5573aaae7955cfaba157441",
+      "hash": "172da4f262e2da21d490800679f652e6b451999fc8a014f284eb2149"
+    },
+    {
+      "title": "ergentum_fees.ergentum_fees.spend",
+      "datum": {
+        "title": "_datum",
+        "schema": {
+          "$ref": "#/definitions/Data"
+        }
+      },
+      "redeemer": {
+        "title": "datum",
+        "schema": {
+          "$ref": "#/definitions/ergentum_fees~1FeeDatum"
+        }
+      },
+      "compiledCode": "59017701000032323232323225333002323232323253330073370e900118041baa0011323322533300a3370e900018059baa0051323232323232323232325333017301900213232323253330183370e9000180c9baa010153330183001013132323300100100522533301e00114a026644a66603a66e3c0080145288998020020009bae301f0013020001375c600860346ea804c52809800809919299980c99b87375a600660366ea8008cdc199b82375a603a603c60366ea80092004483403c4cdc39bad301d301e301e301e301b37540040022940cdc199b82375a600460346ea8005203c48320048c06cc070c070004dd6180c980d180d180d180d180d180d180d180d180b9baa300130173754022460320022c6eb4c05c004c05c008dd6980a800980a8011bad30130013013002375a602200260220046eb8c03c004c030dd50028b18060009806180680098049baa00116300a300b0033009002300800230080013004375400229309b2b2b9a5573aaae7955cfaba15745",
+      "hash": "72c235e6b03a11f26aa708af8a62838dbc7df9017f990e1f85d394ba"
+    },
+    {
+      "title": "ergentum_fees.ergentum_fees.else",
+      "redeemer": {
+        "schema": {}
+      },
+      "compiledCode": "59017701000032323232323225333002323232323253330073370e900118041baa0011323322533300a3370e900018059baa0051323232323232323232325333017301900213232323253330183370e9000180c9baa010153330183001013132323300100100522533301e00114a026644a66603a66e3c0080145288998020020009bae301f0013020001375c600860346ea804c52809800809919299980c99b87375a600660366ea8008cdc199b82375a603a603c60366ea80092004483403c4cdc39bad301d301e301e301e301b37540040022940cdc199b82375a600460346ea8005203c48320048c06cc070c070004dd6180c980d180d180d180d180d180d180d180d180b9baa300130173754022460320022c6eb4c05c004c05c008dd6980a800980a8011bad30130013013002375a602200260220046eb8c03c004c030dd50028b18060009806180680098049baa00116300a300b0033009002300800230080013004375400229309b2b2b9a5573aaae7955cfaba15745",
+      "hash": "72c235e6b03a11f26aa708af8a62838dbc7df9017f990e1f85d394ba"
+    },
+    {
+      "title": "ergentum_node.ergentum_node.spend",
+      "datum": {
+        "title": "_datum",
+        "schema": {
+          "$ref": "#/definitions/Data"
+        }
+      },
+      "redeemer": {
+        "title": "datum",
+        "schema": {
+          "$ref": "#/definitions/ergentum_node~1NodeDatum"
+        }
+      },
+      "compiledCode": "59019f01000032323232323225333002323232323253323300830013009375400426466446464a66601a6004601c6ea80204c8c8c8c8c8c94ccc058c0600084c94ccc050c02400454ccc05cc058dd50020040b0a99980a18068008a99980b980b1baa00400816153330143370e90020008a99980b980b1baa00400816153330143370e90030008a99980b980b1baa0040081616301437540062c6eb4c058004c058008c050004c050008dd7180900098079baa0081613232533300e3003300f375400a266e24c94ccc03cc010004520d00f1533300f30080011482413854ccc03ccdc3a40080022906843018a41813418601e6ea8c048c04cc040dd50049bad30123013301330103754012264646600200200644a66602800229404cc894ccc04ccdc78010028a51133004004001375c602a002602c0026eb8c008c040dd50049bac301130123012301230123012301230123012300f37546002601e6ea80248c044004dc3a4000601a002601a601c00260146ea8008dc3a40042c6014601600660120046010004601000260086ea8004526136565734aae7555cf2ab9f5742ae881",
+      "hash": "ab0d3391654b61872040276c62c6dc4889784b7fb3966f36f65df24f"
+    },
+    {
+      "title": "ergentum_node.ergentum_node.else",
+      "redeemer": {
+        "schema": {}
+      },
+      "compiledCode": "59019f01000032323232323225333002323232323253323300830013009375400426466446464a66601a6004601c6ea80204c8c8c8c8c8c94ccc058c0600084c94ccc050c02400454ccc05cc058dd50020040b0a99980a18068008a99980b980b1baa00400816153330143370e90020008a99980b980b1baa00400816153330143370e90030008a99980b980b1baa0040081616301437540062c6eb4c058004c058008c050004c050008dd7180900098079baa0081613232533300e3003300f375400a266e24c94ccc03cc010004520d00f1533300f30080011482413854ccc03ccdc3a40080022906843018a41813418601e6ea8c048c04cc040dd50049bad30123013301330103754012264646600200200644a66602800229404cc894ccc04ccdc78010028a51133004004001375c602a002602c0026eb8c008c040dd50049bac301130123012301230123012301230123012300f37546002601e6ea80248c044004dc3a4000601a002601a601c00260146ea8008dc3a40042c6014601600660120046010004601000260086ea8004526136565734aae7555cf2ab9f5742ae881",
+      "hash": "ab0d3391654b61872040276c62c6dc4889784b7fb3966f36f65df24f"
+    },
+    {
+      "title": "ergentum_rewards.ergentum_rewards.spend",
+      "datum": {
+        "title": "_datum",
+        "schema": {
+          "$ref": "#/definitions/Data"
+        }
+      },
+      "redeemer": {
+        "title": "datum",
+        "schema": {
+          "$ref": "#/definitions/ergentum_rewards~1RewardDatum"
+        }
+      },
+      "compiledCode": "59012701000032323232323225333002323232323253330073370e900118041baa0011323322533300a3370e900018059baa00513232323232323232533301530170021323253330143370e9000180a9baa00c132323300100100322533301a00114a026644a66603266e3c0080145288998020020009bae301b001301c001375c6004602c6ea803c4cdc424000664600200244a66603200229000099b8048008cc008008c06c004004dd6180b980c180c180c180c180c180c180c180c180a9baa30013015375401e4602e0022c6eb4c054004c054008dd6980980098098011bad30110013011002375c601e00260186ea801458c030004c030c034004c024dd50008b1805180580198048011804001180400098021baa00114984d9595cd2ab9d5573caae7d5d0aba21",
+      "hash": "61ee37ba7083b8322c7fd3c5e4b286a43961f0572d087c122455f3f2"
+    },
+    {
+      "title": "ergentum_rewards.ergentum_rewards.else",
+      "redeemer": {
+        "schema": {}
+      },
+      "compiledCode": "59012701000032323232323225333002323232323253330073370e900118041baa0011323322533300a3370e900018059baa00513232323232323232533301530170021323253330143370e9000180a9baa00c132323300100100322533301a00114a026644a66603266e3c0080145288998020020009bae301b001301c001375c6004602c6ea803c4cdc424000664600200244a66603200229000099b8048008cc008008c06c004004dd6180b980c180c180c180c180c180c180c180c180a9baa30013015375401e4602e0022c6eb4c054004c054008dd6980980098098011bad30110013011002375c601e00260186ea801458c030004c030c034004c024dd50008b1805180580198048011804001180400098021baa00114984d9595cd2ab9d5573caae7d5d0aba21",
+      "hash": "61ee37ba7083b8322c7fd3c5e4b286a43961f0572d087c122455f3f2"
+    }
+  ],
+  "definitions": {
+    "Bool": {
+      "title": "Bool",
+      "anyOf": [
+        {
+          "title": "False",
+          "dataType": "constructor",
+          "index": 0,
+          "fields": []
+        },
+        {
+          "title": "True",
+          "dataType": "constructor",
+          "index": 1,
+          "fields": []
+        }
+      ]
+    },
+    "Data": {
+      "title": "Data",
+      "description": "Any Plutus data."
+    },
+    "Int": {
+      "dataType": "integer"
+    },
+    "VerificationKey": {
+      "title": "VerificationKey",
+      "dataType": "bytes"
+    },
+    "ergentum_bots/BotCategory": {
+      "title": "BotCategory",
+      "anyOf": [
+        {
+          "title": "Legal",
+          "dataType": "constructor",
+          "index": 0,
+          "fields": []
+        },
+        {
+          "title": "Medical",
+          "dataType": "constructor",
+          "index": 1,
+          "fields": []
+        },
+        {
+          "title": "Finance",
+          "dataType": "constructor",
+          "index": 2,
+          "fields": []
+        },
+        {
+          "title": "Technical",
+          "dataType": "constructor",
+          "index": 3,
+          "fields": []
+        },
+        {
+          "title": "General",
+          "dataType": "constructor",
+          "index": 4,
+          "fields": []
+        }
+      ]
+    },
+    "ergentum_bots/BotDatum": {
+      "title": "BotDatum",
+      "anyOf": [
+        {
+          "title": "BotDatum",
+          "dataType": "constructor",
+          "index": 0,
+          "fields": [
+            {
+              "title": "bot_id",
+              "$ref": "#/definitions/VerificationKey"
+            },
+            {
+              "title": "creator_id",
+              "$ref": "#/definitions/VerificationKey"
+            },
+            {
+              "title": "category",
+              "$ref": "#/definitions/ergentum_bots~1BotCategory"
+            },
+            {
+              "title": "deploy_fee",
+              "$ref": "#/definitions/Int"
+            },
+            {
+              "title": "active",
+              "$ref": "#/definitions/Bool"
+            }
+          ]
+        }
+      ]
+    },
+    "ergentum_fees/FeeDatum": {
+      "title": "FeeDatum",
+      "anyOf": [
+        {
+          "title": "FeeDatum",
+          "dataType": "constructor",
+          "index": 0,
+          "fields": [
+            {
+              "title": "payer",
+              "$ref": "#/definitions/VerificationKey"
+            },
+            {
+              "title": "service_value",
+              "$ref": "#/definitions/Int"
+            },
+            {
+              "title": "fee_amount",
+              "$ref": "#/definitions/Int"
+            },
+            {
+              "title": "burn_amount",
+              "$ref": "#/definitions/Int"
+            },
+            {
+              "title": "epoch",
+              "$ref": "#/definitions/Int"
+            }
+          ]
+        }
+      ]
+    },
+    "ergentum_node/NodeDatum": {
+      "title": "NodeDatum",
+      "anyOf": [
+        {
+          "title": "NodeDatum",
+          "dataType": "constructor",
+          "index": 0,
+          "fields": [
+            {
+              "title": "node_id",
+              "$ref": "#/definitions/VerificationKey"
+            },
+            {
+              "title": "tier",
+              "$ref": "#/definitions/ergentum_node~1NodeTier"
+            },
+            {
+              "title": "stake_amount",
+              "$ref": "#/definitions/Int"
+            }
+          ]
+        }
+      ]
+    },
+    "ergentum_node/NodeTier": {
+      "title": "NodeTier",
+      "anyOf": [
+        {
+          "title": "Light",
+          "dataType": "constructor",
+          "index": 0,
+          "fields": []
+        },
+        {
+          "title": "Standard",
+          "dataType": "constructor",
+          "index": 1,
+          "fields": []
+        },
+        {
+          "title": "Professional",
+          "dataType": "constructor",
+          "index": 2,
+          "fields": []
+        },
+        {
+          "title": "Sovereign",
+          "dataType": "constructor",
+          "index": 3,
+          "fields": []
+        }
+      ]
+    },
+    "ergentum_rewards/RewardDatum": {
+      "title": "RewardDatum",
+      "anyOf": [
+        {
+          "title": "RewardDatum",
+          "dataType": "constructor",
+          "index": 0,
+          "fields": [
+            {
+              "title": "node_id",
+              "$ref": "#/definitions/VerificationKey"
+            },
+            {
+              "title": "quality_score",
+              "$ref": "#/definitions/Int"
+            },
+            {
+              "title": "hardware_score",
+              "$ref": "#/definitions/Int"
+            },
+            {
+              "title": "epoch",
+              "$ref": "#/definitions/Int"
+            }
+          ]
+        }
+      ]
+    }
+  }
+}
