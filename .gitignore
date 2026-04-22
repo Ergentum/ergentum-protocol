@@ -1,0 +1,12 @@
+# Private keys — NEVER commit these
+*.skey
+*.vkey
+payment.addr
+policy.script
+
+# Signed transactions
+*.signed
+*.raw
+
+# Local config
+.env
