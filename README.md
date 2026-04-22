@@ -19,7 +19,7 @@ intermediaries, without exposing private data.
 | ERGON Token | 12,500,000 minted (Policy: f0aed7733ac89c0ad46bccb3f9b730edec6ccfbc68b2c7890019540b) |
 | Founding Node | Tier Sovereign — active |
 | Founding Bots | 3 registered on-chain |
-| Total TX | 6 confirmed transactions |
+| Total TX | 8 confirmed transactions |
 
 ## Verify On-Chain
 
@@ -33,6 +33,8 @@ All transactions are publicly verifiable:
 | Ergentum Dev Bot | baa26469d6646c03eaa434e6ca281ccad3f5c70b5403b8d6fb96015f4d09e20c |
 | Ergentum Docs Bot | 948796fc39458dbac497bcb39e1830e75f994f7607c791891a0f35b1ee0d99a4 |
 | Ergentum Assist Bot | 5c82e74a3ce5b7dcf40a754f14bd29f0a7f5ee3f269db52304abc3eabf5a5008 |
+| Service Simulation 1 | 27b8199137375951b126d09b5183594819c85bdf09be73477e09c3b912c89efb |
+| Service Simulation 2 | cf0359a9522dd1bec3c82706100425dee19096099351431bb265852206bcaa63 |
 
 Explorer: https://preview.cardanoscan.io
 
@@ -55,8 +57,8 @@ To register a node on testnet:
 # Requirements: cardano-cli + python3 + requests
 git clone https://github.com/Ergentum/ergentum-protocol
 cd ergentum-protocol
-chmod +x scripts/onboard_node.sh
-./scripts/onboard_node.sh
+chmod +x scripts/onboard_node_en.sh
+./scripts/onboard_node_en.sh
 ```
 
 Get free testnet ADA: https://docs.cardano.org/cardano-testnet/tools/faucet
