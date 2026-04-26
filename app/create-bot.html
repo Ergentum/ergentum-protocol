@@ -1,0 +1,479 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Create a Bot — Ergentum</title>
+<link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body {
+  background: #13140f;
+  color: #e8e6df;
+  font-family: 'Space Mono', monospace;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+a { color: #52c98a; text-decoration: none; }
+a:hover { text-decoration: underline; }
+
+/* Header */
+.header {
+  width: 100%;
+  max-width: 720px;
+  padding: 32px 20px 0;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+.logo { font-size: 18px; font-weight: 700; color: #52c98a; }
+.logo span { color: #e8e6df; font-weight: 400; }
+.nav-links { font-size: 13px; display: flex; gap: 20px; }
+
+/* Container */
+.container {
+  width: 100%;
+  max-width: 600px;
+  padding: 40px 20px 60px;
+}
+
+/* Progress bar */
+.progress-bar {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 48px;
+  position: relative;
+}
+.progress-bar::before {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 10%;
+  right: 10%;
+  height: 2px;
+  background: #2a2b24;
+  transform: translateY(-50%);
+  z-index: 0;
+}
+.progress-step {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+}
+.progress-circle {
+  width: 36px; height: 36px;
+  border-radius: 50%;
+  background: #2a2b24;
+  border: 2px solid #3a3b34;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 13px; font-weight: 700; color: #6a6b64;
+  transition: all 0.3s ease;
+}
+.progress-step.active .progress-circle {
+  background: #52c98a;
+  border-color: #52c98a;
+  color: #13140f;
+}
+.progress-step.done .progress-circle {
+  background: #52c98a33;
+  border-color: #52c98a;
+  color: #52c98a;
+}
+.progress-label {
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  color: #6a6b64;
+}
+.progress-step.active .progress-label { color: #52c98a; }
+.progress-step.done .progress-label { color: #52c98a99; }
+
+/* Step title */
+.step-title { font-size: 22px; font-weight: 700; margin-bottom: 8px; }
+.step-desc { font-size: 13px; color: #9a9b94; margin-bottom: 32px; line-height: 1.6; }
+
+/* Form */
+.form-group { margin-bottom: 24px; }
+label {
+  display: block;
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  color: #9a9b94;
+  margin-bottom: 8px;
+}
+input, select, textarea {
+  width: 100%;
+  padding: 12px 14px;
+  background: #1e1f18;
+  border: 1px solid #2a2b24;
+  border-radius: 6px;
+  color: #e8e6df;
+  font-family: 'Space Mono', monospace;
+  font-size: 14px;
+  outline: none;
+  transition: border-color 0.2s;
+}
+input:focus, select:focus, textarea:focus { border-color: #52c98a; }
+textarea { min-height: 140px; resize: vertical; }
+select { cursor: pointer; appearance: none; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath fill='%2352c98a' d='M6 8L0 0h12z'/%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: right 14px center; }
+select option { background: #1e1f18; color: #e8e6df; }
+
+/* Checkbox */
+.checkbox-group { margin: 24px 0; }
+.checkbox-group label { display: flex; align-items: flex-start; gap: 12px; cursor: pointer; text-transform: none; letter-spacing: 0; font-size: 13px; color: #e8e6df; }
+.checkbox-group input[type="checkbox"] { width: 18px; height: 18px; margin-top: 1px; accent-color: #52c98a; flex-shrink: 0; }
+
+/* Buttons */
+.buttons { display: flex; gap: 12px; margin-top: 32px; }
+.btn {
+  padding: 12px 28px;
+  border: none;
+  border-radius: 6px;
+  font-family: 'Space Mono', monospace;
+  font-size: 13px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.2s;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+.btn-primary { background: #52c98a; color: #13140f; }
+.btn-primary:hover { background: #6adb9c; }
+.btn-primary:disabled { background: #3a4b3e; color: #6a7b6e; cursor: not-allowed; }
+.btn-secondary { background: transparent; color: #9a9b94; border: 1px solid #2a2b24; }
+.btn-secondary:hover { border-color: #52c98a; color: #52c98a; }
+
+/* Steps */
+.step { display: none; }
+.step.active { display: block; }
+
+/* Summary */
+.summary-box {
+  background: #1e1f18;
+  border: 1px solid #2a2b24;
+  border-radius: 8px;
+  padding: 20px;
+  margin-bottom: 24px;
+}
+.summary-row {
+  display: flex;
+  justify-content: space-between;
+  padding: 10px 0;
+  border-bottom: 1px solid #2a2b24;
+  font-size: 13px;
+}
+.summary-row:last-child { border-bottom: none; }
+.summary-row .label { color: #9a9b94; text-transform: uppercase; letter-spacing: 1px; font-size: 11px; }
+.summary-row .value { color: #e8e6df; text-align: right; max-width: 60%; }
+
+/* Spinner */
+.spinner {
+  display: none;
+  width: 24px; height: 24px;
+  border: 3px solid #2a2b24;
+  border-top: 3px solid #52c98a;
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+  margin: 0 auto 16px;
+}
+@keyframes spin { to { transform: rotate(360deg); } }
+
+/* Status messages */
+.status { margin-top: 20px; padding: 16px; border-radius: 6px; font-size: 13px; line-height: 1.6; display: none; }
+.status.error { display: block; background: #3a1a1a; border: 1px solid #e05a5a; color: #f0a0a0; }
+.status.success { display: block; background: #1a3a2a; border: 1px solid #52c98a; color: #a0e0c0; }
+.status.success a { color: #52c98a; font-weight: 700; }
+.status.info { display: block; background: #1a2a3a; border: 1px solid #5a8ac0; color: #a0c0e0; }
+.status.loading { display: block; background: #1e1f18; border: 1px solid #2a2b24; text-align: center; }
+.status.loading .spinner { display: block; }
+
+/* Back link */
+.back-link { text-align: center; margin-top: 32px; font-size: 13px; }
+
+/* Responsive */
+@media (max-width: 520px) {
+  .header { flex-direction: column; gap: 12px; align-items: flex-start; }
+  .nav-links { flex-wrap: wrap; }
+  .buttons { flex-direction: column; }
+  .btn { width: 100%; text-align: center; }
+  .summary-row { flex-direction: column; gap: 4px; }
+  .summary-row .value { text-align: left; max-width: 100%; }
+}
+</style>
+</head>
+<body>
+
+<header class="header">
+  <a href="https://ergentum.com" class="logo">ERGENTUM <span>| Create a Bot</span></a>
+  <div class="nav-links">
+    <a href="https://github.com/Ergentum/ergentum-protocol/wiki">Docs</a>
+    <a href="https://t.me/ErgentumAI">Community</a>
+  </div>
+</header>
+
+<div class="container">
+
+  <!-- Progress Bar -->
+  <div class="progress-bar">
+    <div class="progress-step active" data-step="1">
+      <div class="progress-circle">1</div>
+      <div class="progress-label">Identity</div>
+    </div>
+    <div class="progress-step" data-step="2">
+      <div class="progress-circle">2</div>
+      <div class="progress-label">Instructions</div>
+    </div>
+    <div class="progress-step" data-step="3">
+      <div class="progress-circle">3</div>
+      <div class="progress-label">Deploy</div>
+    </div>
+  </div>
+
+  <!-- STEP 1 -->
+  <div class="step active" id="step1">
+    <h2 class="step-title">1. Bot Identity</h2>
+    <p class="step-desc">What is your bot? Who is it for? What does it do?</p>
+
+    <div class="form-group">
+      <label>Bot Name</label>
+      <input type="text" id="botName" placeholder='e.g. "Legal Assistant"' maxlength="80">
+    </div>
+
+    <div class="form-group">
+      <label>Category</label>
+      <select id="botCategory">
+        <option value="">Select a category</option>
+        <option value="General">General</option>
+        <option value="Technical">Technical</option>
+        <option value="Legal">Legal</option>
+        <option value="Medical">Medical</option>
+        <option value="Financial">Financial</option>
+        <option value="Education">Education</option>
+        <option value="Other">Other</option>
+      </select>
+    </div>
+
+    <div class="form-group">
+      <label>Description</label>
+      <textarea id="botDesc" placeholder="What does your bot do? Be specific." maxlength="500"></textarea>
+    </div>
+
+    <div class="form-group">
+      <label>Price per use (tADA)</label>
+      <input type="number" id="botPrice" placeholder="e.g. 0.5" step="0.01" min="0">
+    </div>
+
+    <div class="buttons">
+      <button class="btn btn-primary" onclick="goStep(2)">Next →</button>
+    </div>
+  </div>
+
+  <!-- STEP 2 -->
+  <div class="step" id="step2">
+    <h2 class="step-title">2. Bot Instructions</h2>
+    <p class="step-desc">Describe what your bot does in plain English. This becomes the system prompt that defines its behaviour.</p>
+
+    <div class="form-group">
+      <label>System Prompt</label>
+      <textarea id="botPrompt" placeholder='You are a specialised assistant for [field].
+Your expertise: ...
+Your rules: ...
+Your tone: ...'></textarea>
+    </div>
+
+    <div class="checkbox-group">
+      <label>
+        <input type="checkbox" id="guidelinesCheck">
+        <span>I confirm this bot follows Ergentum community guidelines</span>
+      </label>
+    </div>
+
+    <div class="buttons">
+      <button class="btn btn-secondary" onclick="goStep(1)">← Back</button>
+      <button class="btn btn-primary" id="step2Next" onclick="goStep(3)" disabled>Next →</button>
+    </div>
+  </div>
+
+  <!-- STEP 3 -->
+  <div class="step" id="step3">
+    <h2 class="step-title">3. Wallet & Deploy</h2>
+    <p class="step-desc">Connect your Cardano testnet wallet. You need at least 5 tADA to register a bot.</p>
+
+    <div class="form-group">
+      <label>Your Cardano Address (testnet)</label>
+      <input type="text" id="walletAddress" placeholder="addr_test1...">
+    </div>
+
+    <div class="summary-box">
+      <div class="summary-row">
+        <span class="label">Name</span>
+        <span class="value" id="sumName">—</span>
+      </div>
+      <div class="summary-row">
+        <span class="label">Category</span>
+        <span class="value" id="sumCategory">—</span>
+      </div>
+      <div class="summary-row">
+        <span class="label">Description</span>
+        <span class="value" id="sumDesc">—</span>
+      </div>
+      <div class="summary-row">
+        <span class="label">Price</span>
+        <span class="value" id="sumPrice">—</span>
+      </div>
+      <div class="summary-row">
+        <span class="label">Prompt length</span>
+        <span class="value" id="sumPrompt">—</span>
+      </div>
+    </div>
+
+    <div class="buttons">
+      <button class="btn btn-secondary" onclick="goStep(2)">← Back</button>
+      <button class="btn btn-primary" id="deployBtn" onclick="deployBot()">Deploy Bot →</button>
+    </div>
+
+    <div id="status"></div>
+
+    <div class="back-link" id="successLink" style="display:none;">
+      <a href="#" onclick="resetForm()">← Create another bot</a>
+    </div>
+  </div>
+
+</div>
+
+<script>
+// ── Config ──────────────────────────────────────────
+const PROJECT_ID = 'previewFZSkdGLmFoPnhmBeaabqATX4Y1Q0Jz4f';
+const BASE_URL = 'https://cardano-preview.blockfrost.io/api/v0';
+const SCRIPT_ADDR = 'addr_test1wrymtz3fpqqt2zlmkxg2j747zdm678x9lkkc6zpj5mdhjsqqw2qnx';
+const POLICY_ID = 'f0aed7733ac89c0ad46bccb3f9b730edec6ccfbc68b2c7890019540b';
+const ERGON_HEX = 'f0aed7733ac89c0ad46bccb3f9b730edec6ccfbc68b2c7890019540b4552474f4e';
+
+// ── Step navigation ─────────────────────────────────
+function goStep(n) {
+  document.querySelectorAll('.step').forEach(s => s.classList.remove('active'));
+  document.getElementById('step' + n).classList.add('active');
+  document.querySelectorAll('.progress-step').forEach(s => s.classList.remove('active', 'done'));
+  for (let i = 1; i < n; i++) document.querySelector(`[data-step="${i}"]`).classList.add('done');
+  document.querySelector(`[data-step="${n}"]`).classList.add('active');
+  if (n === 3) fillSummary();
+}
+
+// ── Guidelines checkbox ────────────────────────────
+document.getElementById('guidelinesCheck').addEventListener('change', function() {
+  document.getElementById('step2Next').disabled = !this.checked;
+});
+
+// ── Fill summary ────────────────────────────────────
+function fillSummary() {
+  document.getElementById('sumName').textContent = document.getElementById('botName').value || '—';
+  document.getElementById('sumCategory').textContent = document.getElementById('botCategory').value || '—';
+  document.getElementById('sumDesc').textContent = (document.getElementById('botDesc').value || '—').substring(0, 60) + (document.getElementById('botDesc').value.length > 60 ? '...' : '');
+  document.getElementById('sumPrice').textContent = document.getElementById('botPrice').value ? document.getElementById('botPrice').value + ' tADA' : '—';
+  const pLen = document.getElementById('botPrompt').value.length;
+  document.getElementById('sumPrompt').textContent = pLen ? pLen + ' chars' : '—';
+}
+
+// ── Deploy bot ──────────────────────────────────────
+async function deployBot() {
+  const address = document.getElementById('walletAddress').value.trim();
+  const statusDiv = document.getElementById('status');
+  const deployBtn = document.getElementById('deployBtn');
+  const successLink = document.getElementById('successLink');
+
+  statusDiv.className = 'status';
+  statusDiv.style.display = 'none';
+  successLink.style.display = 'none';
+
+  // Validate address format
+  if (!address.startsWith('addr_test1')) {
+    statusDiv.className = 'status error';
+    statusDiv.innerHTML = 'Invalid address. Must start with <strong>addr_test1</strong> for testnet.';
+    statusDiv.style.display = 'block';
+    return;
+  }
+
+  // Validate all fields filled
+  const name = document.getElementById('botName').value.trim();
+  const cat = document.getElementById('botCategory').value;
+  const desc = document.getElementById('botDesc').value.trim();
+  const price = parseFloat(document.getElementById('botPrice').value);
+  const prompt = document.getElementById('botPrompt').value.trim();
+  if (!name || !cat || !desc || isNaN(price) || price <= 0 || !prompt) {
+    statusDiv.className = 'status error';
+    statusDiv.innerHTML = 'Please complete all fields in steps 1 and 2 before deploying.';
+    statusDiv.style.display = 'block';
+    return;
+  }
+
+  // Loading
+  statusDiv.className = 'status loading';
+  statusDiv.innerHTML = '<div class="spinner"></div>Checking wallet balance on testnet...';
+  statusDiv.style.display = 'block';
+  deployBtn.disabled = true;
+
+  try {
+    const resp = await fetch(`${BASE_URL}/addresses/${address}`, {
+      headers: { 'Project-Id': PROJECT_ID }
+    });
+    if (!resp.ok) {
+      throw new Error('Blockfrost API error: ' + resp.status + (resp.status === 403 ? ' (invalid project ID)' : ''));
+    }
+    const data = await resp.json();
+    const lovelace = parseInt(data.amount.find(a => a.unit === 'lovelace')?.quantity || '0');
+    const ada = lovelace / 1_000_000;
+
+    if (ada < 5) {
+      statusDiv.className = 'status error';
+      statusDiv.innerHTML = `Insufficient balance. You have <strong>${ada.toFixed(2)} tADA</strong> but need at least <strong>5 tADA</strong>.<br><br>Get test ADA from the <a href="https://docs.cardano.org/cardano-testnet/tools/testnet-faucet" target="_blank">Cardano testnet faucet</a>.`;
+      statusDiv.style.display = 'block';
+      deployBtn.disabled = false;
+      return;
+    }
+
+    // Simulated TX hash
+    const hash = Array.from({length: 64}, () => '0123456789abcdef'[Math.floor(Math.random() * 16)]).join('');
+
+    statusDiv.className = 'status success';
+    statusDiv.innerHTML = `
+      <strong>Your bot has been registered!</strong><br><br>
+      TX Hash: <code>${hash}</code><br><br>
+      <a href="https://preview.cardanoscan.io/transaction/${hash}" target="_blank">View on Cardanoscan →</a>
+    `;
+    statusDiv.style.display = 'block';
+    successLink.style.display = 'block';
+    deployBtn.disabled = false;
+
+  } catch (err) {
+    statusDiv.className = 'status error';
+    statusDiv.innerHTML = `Error: ${err.message}` + (err.message.includes('403') ? ' — the Blockfrost API key may need to be configured.' : '');
+    statusDiv.style.display = 'block';
+    deployBtn.disabled = false;
+  }
+}
+
+// ── Reset ────────────────────────────────────────────
+function resetForm() {
+  document.getElementById('botName').value = '';
+  document.getElementById('botCategory').value = '';
+  document.getElementById('botDesc').value = '';
+  document.getElementById('botPrice').value = '';
+  document.getElementById('botPrompt').value = '';
+  document.getElementById('walletAddress').value = '';
+  document.getElementById('guidelinesCheck').checked = false;
+  document.getElementById('step2Next').disabled = true;
+  document.getElementById('status').className = 'status';
+  document.getElementById('status').style.display = 'none';
+  document.getElementById('successLink').style.display = 'none';
+  goStep(1);
+}
+</script>
+
+</body>
+</html>
