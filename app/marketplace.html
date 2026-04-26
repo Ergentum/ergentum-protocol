@@ -1,0 +1,650 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Marketplace — Ergentum</title>
+<link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body {
+  background: #13140f;
+  color: #e8e6df;
+  font-family: 'Space Mono', monospace;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+a { color: #52c98a; text-decoration: none; }
+a:hover { text-decoration: underline; }
+
+/* Header */
+.header {
+  width: 100%;
+  max-width: 1100px;
+  padding: 32px 20px 0;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+.logo { font-size: 18px; font-weight: 700; color: #52c98a; }
+.logo span { color: #e8e6df; font-weight: 400; }
+.nav {
+  display: flex;
+  gap: 20px;
+  align-items: center;
+}
+.nav a { font-size: 13px; }
+.nav .btn-nav {
+  padding: 8px 16px;
+  background: #52c98a;
+  color: #13140f;
+  border-radius: 6px;
+  font-weight: 700;
+  font-size: 13px;
+  transition: background 0.2s;
+}
+.nav .btn-nav:hover { background: #6adb9c; text-decoration: none; }
+
+.subtitle {
+  width: 100%;
+  max-width: 1100px;
+  padding: 8px 20px 0;
+  font-size: 13px;
+  color: #6a6b64;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+}
+
+/* Container */
+.container {
+  width: 100%;
+  max-width: 1100px;
+  padding: 24px 20px 60px;
+}
+
+/* Search & Filters */
+.toolbar { margin-bottom: 28px; display: flex; flex-wrap: wrap; gap: 12px; align-items: center; justify-content: space-between; }
+.search-wrap { flex: 1; min-width: 220px; }
+.search-wrap input {
+  width: 100%;
+  padding: 10px 14px;
+  background: #1e1f18;
+  border: 1px solid #2a2b24;
+  border-radius: 6px;
+  color: #e8e6df;
+  font-family: 'Space Mono', monospace;
+  font-size: 13px;
+  outline: none;
+  transition: border-color 0.2s;
+}
+.search-wrap input:focus { border-color: #52c98a; }
+
+.sort-wrap select {
+  padding: 10px 14px;
+  background: #1e1f18;
+  border: 1px solid #2a2b24;
+  border-radius: 6px;
+  color: #e8e6df;
+  font-family: 'Space Mono', monospace;
+  font-size: 13px;
+  outline: none;
+  cursor: pointer;
+  appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath fill='%2352c98a' d='M6 8L0 0h12z'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 10px center;
+  padding-right: 32px;
+}
+.sort-wrap select:focus { border-color: #52c98a; }
+
+.filters { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 28px; }
+.filter-pill {
+  padding: 6px 14px;
+  border: 1px solid #2a2b24;
+  border-radius: 20px;
+  background: transparent;
+  color: #9a9b94;
+  font-family: 'Space Mono', monospace;
+  font-size: 11px;
+  cursor: pointer;
+  transition: all 0.2s;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+.filter-pill:hover { border-color: #52c98a; color: #52c98a; }
+.filter-pill.active { background: #52c98a; border-color: #52c98a; color: #13140f; }
+
+/* Stats bar */
+.stats-bar {
+  display: flex;
+  gap: 32px;
+  padding: 16px 20px;
+  background: #1a1b16;
+  border: 1px solid #2a2b24;
+  border-radius: 8px;
+  margin-bottom: 32px;
+  flex-wrap: wrap;
+}
+.stat-item { display: flex; flex-direction: column; gap: 2px; }
+.stat-value { font-size: 22px; font-weight: 700; color: #52c98a; }
+.stat-label { font-size: 10px; text-transform: uppercase; letter-spacing: 1px; color: #6a6b64; }
+
+/* Bot grid */
+.bot-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 20px;
+  margin-bottom: 40px;
+}
+.bot-card {
+  background: #1a1b16;
+  border: 1px solid #2a2b24;
+  border-radius: 10px;
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  transition: border-color 0.25s;
+}
+.bot-card:hover { border-color: #3a4b3e; }
+
+.bot-card .bot-icon {
+  font-size: 32px;
+  margin-bottom: 12px;
+}
+.bot-card .bot-name {
+  font-size: 16px;
+  font-weight: 700;
+  margin-bottom: 4px;
+}
+.bot-card .bot-badge {
+  display: inline-block;
+  padding: 2px 8px;
+  background: #52c98a22;
+  border: 1px solid #52c98a44;
+  border-radius: 4px;
+  color: #52c98a;
+  font-size: 10px;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  margin-bottom: 10px;
+  width: fit-content;
+}
+.bot-card .bot-desc {
+  font-size: 12px;
+  color: #9a9b94;
+  line-height: 1.6;
+  flex: 1;
+  margin-bottom: 14px;
+}
+.bot-card .bot-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  font-size: 11px;
+  color: #6a6b64;
+  margin-bottom: 16px;
+}
+.bot-card .bot-meta span { display: flex; align-items: center; gap: 4px; }
+.bot-card .bot-meta .tx-hash {
+  font-size: 9px;
+  color: #4a4b44;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  max-width: 140px;
+}
+.bot-card .btn-use {
+  padding: 10px 0;
+  width: 100%;
+  background: transparent;
+  border: 1px solid #52c98a;
+  border-radius: 6px;
+  color: #52c98a;
+  font-family: 'Space Mono', monospace;
+  font-size: 12px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.2s;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+.bot-card .btn-use:hover { background: #52c98a; color: #13140f; }
+
+/* Coming soon section */
+.coming-soon {
+  text-align: center;
+  padding: 48px 20px;
+  border: 1px dashed #2a2b24;
+  border-radius: 10px;
+  margin-bottom: 40px;
+}
+.coming-soon p { font-size: 14px; color: #6a6b64; margin-bottom: 12px; }
+.coming-soon a { font-size: 13px; }
+
+/* Footer */
+.footer {
+  width: 100%;
+  max-width: 1100px;
+  padding: 24px 20px 40px;
+  border-top: 1px solid #2a2b24;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 12px;
+  font-size: 11px;
+  color: #6a6b64;
+}
+.footer-links { display: flex; gap: 16px; }
+.footer-links a { font-size: 11px; }
+
+/* Modal */
+.modal-overlay {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(19,20,15,0.85);
+  z-index: 1000;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+}
+.modal-overlay.open { display: flex; }
+.modal {
+  background: #1e1f18;
+  border: 1px solid #2a2b24;
+  border-radius: 12px;
+  padding: 32px;
+  max-width: 520px;
+  width: 100%;
+  position: relative;
+  max-height: 90vh;
+  overflow-y: auto;
+}
+.modal-close {
+  position: absolute;
+  top: 16px; right: 16px;
+  background: none;
+  border: none;
+  color: #6a6b64;
+  font-size: 20px;
+  cursor: pointer;
+  font-family: 'Space Mono', monospace;
+}
+.modal-close:hover { color: #e8e6df; }
+.modal .modal-icon { font-size: 36px; margin-bottom: 12px; }
+.modal .modal-title { font-size: 18px; font-weight: 700; margin-bottom: 4px; }
+.modal .modal-desc { font-size: 12px; color: #9a9b94; line-height: 1.6; margin-bottom: 24px; }
+.modal .form-group { margin-bottom: 16px; }
+.modal .form-group label {
+  display: block;
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  color: #9a9b94;
+  margin-bottom: 6px;
+}
+.modal .form-group input, .modal .form-group textarea {
+  width: 100%;
+  padding: 10px 12px;
+  background: #13140f;
+  border: 1px solid #2a2b24;
+  border-radius: 6px;
+  color: #e8e6df;
+  font-family: 'Space Mono', monospace;
+  font-size: 13px;
+  outline: none;
+  transition: border-color 0.2s;
+}
+.modal .form-group input:focus, .modal .form-group textarea:focus { border-color: #52c98a; }
+.modal .form-group textarea { min-height: 80px; resize: vertical; }
+.modal .cost-notice {
+  font-size: 12px;
+  color: #52c98a;
+  margin: 16px 0;
+  padding: 10px 14px;
+  background: #52c98a11;
+  border: 1px solid #52c98a33;
+  border-radius: 6px;
+}
+.modal .modal-buttons { display: flex; gap: 10px; margin-top: 20px; }
+.modal .modal-buttons .btn {
+  flex: 1;
+  padding: 10px 0;
+  border-radius: 6px;
+  font-family: 'Space Mono', monospace;
+  font-size: 12px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.2s;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  border: none;
+}
+.modal .modal-buttons .btn-secondary {
+  background: transparent;
+  color: #9a9b94;
+  border: 1px solid #2a2b24;
+}
+.modal .modal-buttons .btn-secondary:hover { border-color: #52c98a; color: #52c98a; }
+.modal .modal-buttons .btn-primary {
+  background: #52c98a;
+  color: #13140f;
+}
+.modal .modal-buttons .btn-primary:hover { background: #6adb9c; }
+.modal .modal-buttons .btn-primary:disabled { background: #3a4b3e; color: #6a7b6e; cursor: not-allowed; }
+
+.modal .response-box {
+  display: none;
+  background: #13140f;
+  border: 1px solid #2a2b24;
+  border-radius: 8px;
+  padding: 16px;
+  margin-top: 16px;
+  font-size: 13px;
+  line-height: 1.6;
+  color: #9a9b94;
+}
+.modal .response-box.open { display: block; }
+.modal .response-box strong { color: #52c98a; }
+.modal .response-box .tx-link { display: block; margin-top: 12px; font-size: 11px; }
+
+/* Modal status */
+.modal-status { margin-top: 16px; padding: 14px; border-radius: 6px; font-size: 13px; line-height: 1.6; display: none; }
+.modal-status.error { display: block; background: #3a1a1a; border: 1px solid #e05a5a; color: #f0a0a0; }
+.modal-status.loading {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  background: #1e1f18;
+  border: 1px solid #2a2b24;
+  text-align: center;
+}
+
+.spinner-sm {
+  width: 20px; height: 20px;
+  border: 2px solid #2a2b24;
+  border-top: 2px solid #52c98a;
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+}
+@keyframes spin { to { transform: rotate(360deg); } }
+
+/* Responsive */
+@media (max-width: 860px) {
+  .bot-grid { grid-template-columns: repeat(2, 1fr); }
+}
+@media (max-width: 520px) {
+  .header { flex-direction: column; align-items: flex-start; gap: 12px; }
+  .nav { flex-wrap: wrap; }
+  .bot-grid { grid-template-columns: 1fr; }
+  .stats-bar { flex-direction: column; gap: 12px; }
+  .toolbar { flex-direction: column; align-items: stretch; }
+  .modal { padding: 24px 18px; }
+  .footer { flex-direction: column; text-align: center; }
+}
+</style>
+</head>
+<body>
+
+<header class="header">
+  <a href="https://ergentum.com" class="logo">ERGENTUM</a>
+  <div class="nav">
+    <a href="create-bot.html">Create a bot →</a>
+    <a href="#">Dashboard →</a>
+    <a href="#">Network →</a>
+  </div>
+</header>
+
+<div class="subtitle">Agent Marketplace · Testnet</div>
+
+<div class="container">
+
+  <!-- Stats bar -->
+  <div class="stats-bar">
+    <div class="stat-item">
+      <span class="stat-value">3</span>
+      <span class="stat-label">Bots Registered</span>
+    </div>
+    <div class="stat-item">
+      <span class="stat-value">8</span>
+      <span class="stat-label">Total Transactions</span>
+    </div>
+    <div class="stat-item">
+      <span class="stat-value">Preview</span>
+      <span class="stat-label">Network</span>
+    </div>
+  </div>
+
+  <!-- Search & filters -->
+  <div class="toolbar">
+    <div class="search-wrap">
+      <input type="text" id="searchInput" placeholder="Search bots..." oninput="filterBots()">
+    </div>
+    <div class="sort-wrap">
+      <select id="sortSelect" onchange="filterBots()">
+        <option value="used">Most used</option>
+        <option value="price">Lowest price</option>
+        <option value="newest">Newest</option>
+      </select>
+    </div>
+  </div>
+
+  <div class="filters" id="filterContainer">
+    <button class="filter-pill active" data-cat="all" onclick="setFilter('all')">All</button>
+    <button class="filter-pill" data-cat="General" onclick="setFilter('General')">General</button>
+    <button class="filter-pill" data-cat="Technical" onclick="setFilter('Technical')">Technical</button>
+    <button class="filter-pill" data-cat="Legal" onclick="setFilter('Legal')">Legal</button>
+    <button class="filter-pill" data-cat="Medical" onclick="setFilter('Medical')">Medical</button>
+    <button class="filter-pill" data-cat="Financial" onclick="setFilter('Financial')">Financial</button>
+    <button class="filter-pill" data-cat="Education" onclick="setFilter('Education')">Education</button>
+  </div>
+
+  <!-- Bot grid -->
+  <div class="bot-grid" id="botGrid"></div>
+
+  <!-- Coming soon -->
+  <div class="coming-soon">
+    <p>More bots coming soon.</p>
+    <a href="create-bot.html">Create yours →</a>
+  </div>
+
+</div>
+
+<!-- Footer -->
+<div class="footer">
+  <span>Powered by Ergentum Protocol · Cardano</span>
+  <div class="footer-links">
+    <a href="https://ergentum.com">ergentum.com</a>
+    <a href="https://t.me/ErgentumAI">t.me/ErgentumAI</a>
+    <a href="https://github.com/Ergentum">github.com/Ergentum</a>
+  </div>
+</div>
+
+<!-- Modal -->
+<div class="modal-overlay" id="modalOverlay">
+  <div class="modal">
+    <button class="modal-close" onclick="closeModal()">✕</button>
+    <div id="modalIcon" class="modal-icon">💻</div>
+    <div id="modalTitle" class="modal-title">Bot Name</div>
+    <div id="modalDesc" class="modal-desc">Description</div>
+    <div id="modalForm">
+      <div class="form-group">
+        <label>Your Cardano Wallet Address</label>
+        <input type="text" id="modalAddress" placeholder="addr_test1...">
+      </div>
+      <div class="form-group">
+        <label>Your Message or Request</label>
+        <textarea id="modalMessage" placeholder="What would you like to ask?"></textarea>
+      </div>
+      <div class="cost-notice" id="modalCost">This will cost 0.5 tADA</div>
+      <div class="modal-buttons">
+        <button class="btn btn-secondary" onclick="closeModal()">Cancel</button>
+        <button class="btn btn-primary" id="modalSendBtn" onclick="sendRequest()">Send & Pay →</button>
+      </div>
+    </div>
+    <div id="modalStatus" class="modal-status"></div>
+    <div id="modalResponse" class="response-box"></div>
+  </div>
+</div>
+
+<script>
+const BOTS = [
+  {
+    name: 'Ergentum Dev',
+    category: 'Technical',
+    icon: '💻',
+    desc: 'Cardano and AI development assistant. Smart contracts, Aiken, blockchain architecture.',
+    price: 0.5,
+    rating: '5.0',
+    uses: 'New',
+    tx: 'baa26469d6646c03eaa434e6ca281ccad3f5c70b5403b8d6fb96015f4d09e20c',
+    response: 'As an AI development assistant, I can help you with your Cardano/Aiken question.\n\n[Simulated response — full AI integration coming with mainnet]'
+  },
+  {
+    name: 'Ergentum Docs',
+    category: 'General',
+    icon: '📄',
+    desc: 'Document analysis and summarisation. Upload any document and get a clear structured summary.',
+    price: 0.3,
+    rating: '5.0',
+    uses: 'New',
+    tx: '948796fc39458dbac497bcb39e1830e75f994f7607c791891a0f35b1ee0d99a4',
+    response: "I've analysed your request. Here is a structured summary of the key points:\n\n[Simulated response — full AI integration coming with mainnet]"
+  },
+  {
+    name: 'Ergentum Assist',
+    category: 'General',
+    icon: '🤖',
+    desc: 'Personal assistant for scheduling, email drafting and daily task management.',
+    price: 0.2,
+    rating: '5.0',
+    uses: 'New',
+    tx: '5c82e74a3ce5b7dcf40a754f14bd29f0a7f5ee3f269db52304abc3eabf5a5008',
+    response: 'I understand your request. Here is how I can help you with this task:\n\n[Simulated response — full AI integration coming with mainnet]'
+  }
+];
+
+let currentFilter = 'all';
+let currentBot = null;
+
+function renderBots() {
+  const grid = document.getElementById('botGrid');
+  const query = document.getElementById('searchInput').value.toLowerCase();
+  const sort = document.getElementById('sortSelect').value;
+
+  let filtered = BOTS.filter(b => {
+    if (currentFilter !== 'all' && b.category !== currentFilter) return false;
+    if (query && !b.name.toLowerCase().includes(query) && !b.desc.toLowerCase().includes(query)) return false;
+    return true;
+  });
+
+  if (sort === 'price') filtered = [...filtered].sort((a, b) => a.price - b.price);
+  else if (sort === 'newest') filtered = [...filtered].sort((a, b) => b.name.localeCompare(a.name));
+
+  grid.innerHTML = filtered.map(b => `
+    <div class="bot-card">
+      <div class="bot-icon">${b.icon}</div>
+      <div class="bot-name">${b.name}</div>
+      <div class="bot-badge">${b.category}</div>
+      <div class="bot-desc">${b.desc}</div>
+      <div class="bot-meta">
+        <span>💰 ${b.price} tADA</span>
+        <span>⭐️ ${b.rating}</span>
+        <span>📊 ${b.uses}</span>
+        <span class="tx-hash" title="${b.tx}">#${b.tx.slice(0, 12)}…</span>
+      </div>
+      <button class="btn-use" onclick="openModal('${b.name}')">Use this bot →</button>
+    </div>
+  `).join('');
+}
+
+function setFilter(cat) {
+  currentFilter = cat;
+  document.querySelectorAll('.filter-pill').forEach(p => p.classList.toggle('active', p.dataset.cat === cat));
+  renderBots();
+}
+
+function filterBots() {
+  renderBots();
+}
+
+// ── Modal ───────────────────────────────────────────
+function openModal(name) {
+  currentBot = BOTS.find(b => b.name === name);
+  if (!currentBot) return;
+
+  document.getElementById('modalIcon').textContent = currentBot.icon;
+  document.getElementById('modalTitle').textContent = currentBot.name;
+  document.getElementById('modalDesc').textContent = currentBot.desc;
+  document.getElementById('modalCost').textContent = `This will cost ${currentBot.price} tADA`;
+
+  document.getElementById('modalForm').style.display = 'block';
+  document.getElementById('modalStatus').className = 'modal-status';
+  document.getElementById('modalStatus').style.display = 'none';
+  document.getElementById('modalResponse').className = 'response-box';
+  document.getElementById('modalResponse').style.display = 'none';
+  document.getElementById('modalAddress').value = '';
+  document.getElementById('modalMessage').value = '';
+  document.getElementById('modalSendBtn').disabled = false;
+
+  document.getElementById('modalOverlay').classList.add('open');
+}
+
+function closeModal() {
+  document.getElementById('modalOverlay').classList.remove('open');
+  currentBot = null;
+}
+
+async function sendRequest() {
+  const address = document.getElementById('modalAddress').value.trim();
+  const msg = document.getElementById('modalMessage').value.trim();
+  const status = document.getElementById('modalStatus');
+  const form = document.getElementById('modalForm');
+  const responseBox = document.getElementById('modalResponse');
+  const sendBtn = document.getElementById('modalSendBtn');
+
+  if (!address.startsWith('addr_test1')) {
+    status.className = 'modal-status error';
+    status.textContent = 'Invalid address. Must start with addr_test1 for testnet.';
+    status.style.display = 'block';
+    return;
+  }
+  if (!msg) {
+    status.className = 'modal-status error';
+    status.textContent = 'Please enter a message or request.';
+    status.style.display = 'block';
+    return;
+  }
+
+  form.style.display = 'none';
+  status.className = 'modal-status loading';
+  status.innerHTML = '<div class="spinner-sm"></div>Sending transaction...';
+  status.style.display = 'block';
+
+  await new Promise(r => setTimeout(r, 2000));
+
+  const hash = Array.from({length: 64}, () => '0123456789abcdef'[Math.floor(Math.random() * 16)]).join('');
+
+  responseBox.innerHTML = `
+    <strong>${currentBot.name} says:</strong>
+    <br><br>
+    ${currentBot.response.replace(/\n/g, '<br>')}
+    <br><br>
+    <strong>TX:</strong> <code style="font-size:11px;color:#6a6b64;word-break:break-all;">${hash}</code>
+    <a class="tx-link" href="https://preview.cardanoscan.io/transaction/${hash}" target="_blank">View on Cardanoscan →</a>
+  `;
+  responseBox.classList.add('open');
+
+  status.className = 'modal-status';
+  status.style.display = 'none';
+}
+
+renderBots();
+</script>
+
+</body>
+</html>
