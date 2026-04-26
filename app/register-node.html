@@ -1,0 +1,534 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Register a Node — Ergentum</title>
+<link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body {
+  background: #13140f;
+  color: #e8e6df;
+  font-family: 'Space Mono', monospace;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+a { color: #52c98a; text-decoration: none; }
+a:hover { text-decoration: underline; }
+
+/* Header */
+.header {
+  width: 100%;
+  max-width: 1100px;
+  padding: 32px 20px 0;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+.logo { font-size: 18px; font-weight: 700; color: #52c98a; }
+.logo span { color: #e8e6df; font-weight: 400; }
+.nav-links { font-size: 13px; display: flex; gap: 20px; }
+
+/* Container */
+.container { width: 100%; max-width: 600px; padding: 40px 20px 60px; }
+
+/* Back link */
+.back-link { font-size: 12px; margin-bottom: 24px; display: inline-block; }
+.back-link:hover { text-decoration: underline; }
+
+/* Progress bar */
+.progress { display: flex; gap: 8px; margin-bottom: 32px; }
+.progress .step {
+  flex: 1; height: 4px; border-radius: 2px;
+  background: #2a2b24; transition: background 0.3s;
+}
+.progress .step.active { background: #52c98a; }
+
+/* Step title */
+.step-title { font-size: 18px; font-weight: 700; margin-bottom: 4px; }
+.step-subtitle { font-size: 12px; color: #6a6b64; margin-bottom: 28px; }
+
+/* Form groups */
+.form-group { margin-bottom: 20px; }
+.form-group label {
+  display: block; font-size: 11px; text-transform: uppercase;
+  letter-spacing: 1px; color: #9a9b94; margin-bottom: 6px;
+}
+.form-group select, .form-group input, .form-group textarea {
+  width: 100%;
+  padding: 10px 12px;
+  background: #1e1f18;
+  border: 1px solid #2a2b24;
+  border-radius: 6px;
+  color: #e8e6df;
+  font-family: 'Space Mono', monospace;
+  font-size: 13px;
+  outline: none;
+  transition: border-color 0.2s;
+  appearance: none;
+}
+.form-group select {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath fill='%2352c98a' d='M6 8L0 0h12z'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 10px center;
+  padding-right: 32px;
+}
+.form-group select:focus, .form-group input:focus, .form-group textarea:focus { border-color: #52c98a; }
+.form-group .field-hint { font-size: 11px; color: #6a6b64; margin-top: 4px; line-height: 1.5; }
+
+/* Tier info box */
+.tier-info {
+  display: none;
+  background: #1a1b16;
+  border: 1px solid #2a2b24;
+  border-radius: 8px;
+  padding: 16px;
+  margin-top: 12px;
+  margin-bottom: 24px;
+  font-size: 12px;
+  line-height: 1.6;
+  color: #9a9b94;
+}
+.tier-info.open { display: block; }
+.tier-info strong { color: #e8e6df; }
+
+.tier-specs { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin: 10px 0; }
+.tier-specs .spec { padding: 6px 10px; background: #13140f; border-radius: 4px; font-size: 11px; color: #9a9b94; }
+.tier-specs .spec .spec-lbl { color: #6a6b64; text-transform: uppercase; font-size: 9px; letter-spacing: 1px; }
+.tier-specs .spec .spec-val { color: #52c98a; font-size: 13px; font-weight: 700; margin-top: 2px; }
+
+/* Note boxes */
+.note-box {
+  background: #1a1b16;
+  border: 1px solid #2a2b24;
+  border-radius: 6px;
+  padding: 12px 14px;
+  margin: 12px 0;
+  font-size: 12px;
+  color: #9a9b94;
+  line-height: 1.5;
+  display: none;
+}
+
+/* Collapsible */
+.toggle-link {
+  display: inline-block;
+  font-size: 12px;
+  color: #52c98a;
+  cursor: pointer;
+  margin-bottom: 12px;
+  user-select: none;
+}
+.toggle-link .arrow { display: inline-block; transition: transform 0.2s; margin-left: 4px; }
+.toggle-link.open .arrow { transform: rotate(180deg); }
+.toggle-content { display: none; }
+.toggle-content.open { display: block; }
+
+/* Summary */
+.summary-box {
+  background: #1a1b16;
+  border: 1px solid #2a2b24;
+  border-radius: 8px;
+  padding: 16px;
+  margin-bottom: 24px;
+}
+.summary-row { display: flex; justify-content: space-between; padding: 6px 0; font-size: 13px; border-bottom: 1px solid #1e1f18; }
+.summary-row:last-child { border-bottom: none; }
+.summary-row .label { color: #6a6b64; }
+.summary-row .value { color: #52c98a; font-weight: 700; }
+
+/* Buttons */
+.buttons { display: flex; gap: 10px; margin-top: 24px; }
+.btn {
+  flex: 1;
+  padding: 12px 0;
+  border: none;
+  border-radius: 6px;
+  font-family: 'Space Mono', monospace;
+  font-size: 13px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.2s;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+.btn:disabled { opacity: 0.4; cursor: not-allowed; }
+.btn-primary { background: #52c98a; color: #13140f; }
+.btn-primary:hover:not(:disabled) { background: #6adb9c; }
+.btn-secondary { background: transparent; color: #9a9b94; border: 1px solid #2a2b24; }
+.btn-secondary:hover:not(:disabled) { border-color: #52c98a; color: #52c98a; }
+
+/* Status */
+.status {
+  display: none;
+  padding: 16px;
+  border-radius: 6px;
+  font-size: 13px;
+  line-height: 1.6;
+  margin-top: 20px;
+}
+.status.error { display: block; background: #3a1a1a; border: 1px solid #e05a5a; color: #f0a0a0; }
+.status.success {
+  display: block;
+  background: #1a2e1e;
+  border: 1px solid #52c98a44;
+  color: #52c98a;
+}
+.status.loading {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  background: #1e1f18;
+  border: 1px solid #2a2b24;
+  text-align: center;
+}
+.status code { font-size: 11px; color: #6a6b64; word-break: break-all; }
+.status a { font-size: 12px; margin-top: 8px; display: inline-block; }
+.status .spinner { width: 24px; height: 24px; border: 2px solid #2a2b24; border-top: 2px solid #52c98a; border-radius: 50%; animation: spin 0.8s linear infinite; }
+@keyframes spin { to { transform: rotate(360deg); } }
+
+/* Success link */
+.success-link { display: none; margin-top: 16px; text-align: center; }
+.success-link a { font-size: 13px; }
+
+/* Responsive */
+@media (max-width: 520px) {
+  .header { flex-direction: column; align-items: flex-start; gap: 12px; }
+  .nav-links { flex-wrap: wrap; }
+  .buttons { flex-direction: column; }
+  .btn { width: 100%; text-align: center; }
+  .tier-specs { grid-template-columns: 1fr; }
+}
+</style>
+</head>
+<body>
+
+<header class="header">
+  <a href="https://ergentum.com" class="logo">ERGENTUM</a>
+  <div class="nav-links">
+    <a href="https://app.ergentum.com/dashboard.html">Dashboard</a>
+    <a href="https://app.ergentum.com/marketplace.html">Marketplace</a>
+    <a href="https://app.ergentum.com/create-bot.html">Create a bot →</a>
+    <a href="https://ergentum.com/network">Network</a>
+  </div>
+</header>
+
+<div class="container">
+
+  <a class="back-link" href="https://app.ergentum.com/dashboard.html">← Back to Dashboard</a>
+
+  <div class="progress" id="progressBar">
+    <div class="step active" id="step1"></div>
+    <div class="step" id="step2"></div>
+    <div class="step" id="step3"></div>
+  </div>
+
+  <!-- Step 1: Node Setup -->
+  <div id="step1Content">
+    <div class="step-title">Node Setup</div>
+    <div class="step-subtitle">Choose your tier and configure your node</div>
+
+    <div class="form-group">
+      <label>Choose your tier</label>
+      <select id="nodeTier" onchange="onTierChange()">
+        <option value="">— Select a tier —</option>
+        <option value="light">Light — VPS, 3-7B model, 1.0x rewards</option>
+        <option value="standard">Standard — RTX 3060+, 13-34B model, 1.3x rewards</option>
+        <option value="professional">Professional — RTX 4090+, 70B model, 2.0x rewards</option>
+        <option value="sovereign">Sovereign — 2x RTX 4090+, 100% local, 4.0x rewards</option>
+      </select>
+    </div>
+
+    <div class="tier-info" id="tierInfo">
+      <div class="tier-specs" id="tierSpecs"></div>
+      <div id="tierEarnings" style="margin-top:8px;"></div>
+      <div style="margin-top:10px;font-style:italic;color:#6a6b64;">Stake is voluntary — hardware defines your tier, not capital.</div>
+    </div>
+
+    <div class="form-group">
+      <label>Node name <span style="text-transform:none;letter-spacing:0;color:#6a6b64;">(optional)</span></label>
+      <input type="text" id="nodeName" placeholder="e.g. My First Node, Berlin Node, Home Lab">
+    </div>
+
+    <div class="form-group">
+      <label>Infrastructure type</label>
+      <select id="infraType">
+        <option value="">— Select infrastructure —</option>
+        <option value="local">Local hardware</option>
+        <option value="vps">VPS</option>
+        <option value="cloud">Cloud GPU</option>
+        <option value="hybrid">Hybrid</option>
+      </select>
+    </div>
+
+    <div class="buttons">
+      <button class="btn btn-primary" id="step1Next" disabled onclick="goStep2()">Next →</button>
+    </div>
+  </div>
+
+  <!-- Step 2: AI Model -->
+  <div id="step2Content" style="display:none;">
+    <div class="step-title">AI Model</div>
+    <div class="step-subtitle">Choose how your node processes AI tasks</div>
+
+    <div class="form-group">
+      <label>AI Model type</label>
+      <select id="modelType" onchange="onModelChange()">
+        <option value="">— Select model type —</option>
+        <option value="external">External API (Claude, GPT, Grok)</option>
+        <option value="local">Local model (Ollama, LM Studio)</option>
+        <option value="hybrid">Hybrid (local + API fallback)</option>
+      </select>
+    </div>
+
+    <div class="note-box" id="modelExternalNote">
+      Requires API key. Additional cost ~€20-100/month
+    </div>
+    <div class="note-box" id="modelLocalNote">
+      Free. Runs on your hardware.
+    </div>
+
+    <div class="form-group">
+      <label>Model name <span style="text-transform:none;letter-spacing:0;color:#6a6b64;">(optional)</span></label>
+      <input type="text" id="modelName" placeholder="e.g. Qwen 14B, Mistral 7B, GPT-4o">
+    </div>
+
+    <span class="toggle-link" id="ollamaToggle" onclick="toggleOllama()">Don't have a local model? Here's how → <span class="arrow">▼</span></span>
+    <div class="toggle-content" id="ollamaGuide">
+      <div style="background:#1a1b16;border:1px solid #2a2b24;border-radius:8px;padding:16px;margin-bottom:20px;font-size:12px;line-height:1.6;color:#9a9b94;">
+        <strong style="color:#e8e6df;">Install Ollama (free):</strong>
+        <br><br>
+        1. Go to <a href="https://ollama.ai" target="_blank">ollama.ai</a><br>
+        2. Download and install Ollama<br>
+        3. Open your terminal and run:<br>
+        &nbsp;&nbsp;<code style="color:#52c98a;background:#13140f;padding:2px 6px;border-radius:2px;">ollama pull qwen2.5:14b</code><br>
+        4. Your model is ready
+        <br><br>
+        <strong style="color:#52c98a;">Suggested models for each tier:</strong><br>
+        · Light: <code style="color:#52c98a;background:#13140f;padding:1px 4px;border-radius:2px;">qwen2.5:7b</code> or <code style="color:#52c98a;background:#13140f;padding:1px 4px;border-radius:2px;">mistral:7b</code><br>
+        · Standard: <code style="color:#52c98a;background:#13140f;padding:1px 4px;border-radius:2px;">qwen2.5:14b</code> or <code style="color:#52c98a;background:#13140f;padding:1px 4px;border-radius:2px;">codellama:13b</code><br>
+        · Professional: <code style="color:#52c98a;background:#13140f;padding:1px 4px;border-radius:2px;">qwen2.5:72b</code> or <code style="color:#52c98a;background:#13140f;padding:1px 4px;border-radius:2px;">mixtral:8x7b</code><br>
+        · Sovereign: <code style="color:#52c98a;background:#13140f;padding:1px 4px;border-radius:2px;">command-r-plus</code> or <code style="color:#52c98a;background:#13140f;padding:1px 4px;border-radius:2px;">qwen2.5:72b</code>
+      </div>
+    </div>
+
+    <div class="buttons">
+      <button class="btn btn-secondary" onclick="goStep1()">← Back</button>
+      <button class="btn btn-primary" id="step2Next" disabled onclick="goStep3()">Next →</button>
+    </div>
+  </div>
+
+  <!-- Step 3: Wallet & Register -->
+  <div id="step3Content" style="display:none;">
+    <div class="step-title">Wallet & Register</div>
+    <div class="step-subtitle">Connect your wallet and deploy your node</div>
+
+    <div class="form-group">
+      <label>Your Cardano Address (testnet)</label>
+      <input type="text" id="walletAddress" placeholder="addr_test1...">
+    </div>
+
+    <span class="toggle-link" id="walletToggle" onclick="toggleWallet()">Don't have a Cardano wallet? Here's how → <span class="arrow">▼</span></span>
+    <div class="toggle-content" id="walletGuide">
+      <div style="background:#1a1b16;border:1px solid #2a2b24;border-radius:8px;padding:16px;margin-bottom:20px;font-size:12px;line-height:1.6;color:#9a9b94;">
+        To receive earnings from your node, you need a Cardano wallet address.
+        <br><br>
+        <strong style="color:#e8e6df;">EASIEST OPTIONS (free):</strong><br><br>
+        1. <strong style="color:#52c98a;">Eternl Wallet</strong> (browser extension)<br>
+        &nbsp;&nbsp;→ <a href="https://eternl.io" target="_blank">eternl.io</a> → Install → Create wallet<br>
+        &nbsp;&nbsp;→ Copy your address (starts with <code style="color:#52c98a;background:#13140f;padding:1px 4px;border-radius:2px;">addr_test1</code> for testnet)
+        <br><br>
+        2. <strong style="color:#52c98a;">Lace Wallet</strong> (browser extension)<br>
+        &nbsp;&nbsp;→ <a href="https://lace.io" target="_blank">lace.io</a> → Install → Create wallet<br>
+        &nbsp;&nbsp;→ Switch to Preview Testnet in settings<br>
+        &nbsp;&nbsp;→ Copy your address
+        <br><br>
+        <strong style="color:#e8e6df;">GET FREE TESTNET ADA:</strong><br><br>
+        After creating your wallet, get free tADA:<br>
+        &nbsp;&nbsp;→ <a href="https://faucet.preview.cardano.org" target="_blank">faucet.preview.cardano.org</a><br>
+        &nbsp;&nbsp;→ Paste your address → Request funds<br>
+        &nbsp;&nbsp;→ Wait 1-2 minutes
+        <br><br>
+        Need help? Ask in our community:<br>
+        &nbsp;&nbsp;→ <a href="https://t.me/ErgentumAI" target="_blank">t.me/ErgentumAI</a>
+      </div>
+    </div>
+
+    <!-- Summary -->
+    <div class="summary-box">
+      <div class="summary-row"><span class="label">Tier</span><span class="value" id="summaryTier">—</span></div>
+      <div class="summary-row"><span class="label">Reward multiplier</span><span class="value" id="summaryMultiplier">—</span></div>
+      <div class="summary-row"><span class="label">Est. monthly earnings</span><span class="value" id="summaryEarnings">—</span></div>
+      <div class="summary-row"><span class="label">AI Model</span><span class="value" id="summaryModel">—</span></div>
+    </div>
+
+    <div class="buttons">
+      <button class="btn btn-secondary" onclick="goStep2()">← Back</button>
+      <button class="btn btn-primary" id="registerBtn" onclick="registerNode()">Register Node →</button>
+    </div>
+
+    <div class="status" id="status"></div>
+    <div class="success-link" id="successLink">
+      <a href="https://app.ergentum.com/dashboard.html">← Back to Dashboard</a>
+    </div>
+  </div>
+
+</div>
+
+<script>
+function onTierChange() {
+  const val = document.getElementById('nodeTier').value;
+  const info = document.getElementById('tierInfo');
+  const specs = document.getElementById('tierSpecs');
+  const earnings = document.getElementById('tierEarnings');
+
+  document.getElementById('step1Next').disabled = !val;
+
+  if (!val) { info.classList.remove('open'); return; }
+
+  const data = {
+    light: {
+      hw: ['4+ vCPU', '8+ GB RAM', '50+ GB SSD'],
+      model: '3-7B parameters',
+      earn: '€50-150 / month',
+      mult: '1.0x'
+    },
+    standard: {
+      hw: ['RTX 3060 / 4060', '16+ GB VRAM', '32+ GB RAM', '100+ GB SSD'],
+      model: '13-34B parameters',
+      earn: '€150-400 / month',
+      mult: '1.3x'
+    },
+    professional: {
+      hw: ['RTX 4090', '24+ GB VRAM', '64+ GB RAM', '200+ GB SSD'],
+      model: '70B parameters',
+      earn: '€400-1,000 / month',
+      mult: '2.0x'
+    },
+    sovereign: {
+      hw: ['2x RTX 4090+', '48+ GB VRAM', '128+ GB RAM', '500+ GB SSD'],
+      model: '100% local, any size',
+      earn: '€1,000+ / month',
+      mult: '4.0x'
+    }
+  };
+
+  const d = data[val];
+  specs.innerHTML = `
+    <div class="spec"><div class="spec-lbl">Hardware</div><div class="spec-val">${d.hw.join(', ')}</div></div>
+    <div class="spec"><div class="spec-lbl">Model Size</div><div class="spec-val">${d.model}</div></div>
+    <div class="spec"><div class="spec-lbl">Reward Mult.</div><div class="spec-val">${d.mult}</div></div>
+    <div class="spec"><div class="spec-lbl">Est. Earnings</div><div class="spec-val">${d.earn}</div></div>
+  `;
+  earnings.innerHTML = `<strong style="color:#52c98a;">Estimated monthly earnings:</strong> ${d.earn}`;
+  info.classList.add('open');
+}
+
+function onModelChange() {
+  const val = document.getElementById('modelType').value;
+  document.getElementById('modelExternalNote').style.display = val === 'external' || val === 'hybrid' ? 'block' : 'none';
+  document.getElementById('modelLocalNote').style.display = val === 'local' ? 'block' : 'none';
+  document.getElementById('step2Next').disabled = !val;
+}
+
+function toggleOllama() {
+  document.getElementById('ollamaToggle').classList.toggle('open');
+  document.getElementById('ollamaGuide').classList.toggle('open');
+}
+
+function toggleWallet() {
+  document.getElementById('walletToggle').classList.toggle('open');
+  document.getElementById('walletGuide').classList.toggle('open');
+}
+
+function goStep1() {
+  document.getElementById('step1Content').style.display = 'block';
+  document.getElementById('step2Content').style.display = 'none';
+  document.getElementById('step3Content').style.display = 'none';
+  setProgress(1);
+}
+
+function goStep2() {
+  document.getElementById('step1Content').style.display = 'none';
+  document.getElementById('step2Content').style.display = 'block';
+  document.getElementById('step3Content').style.display = 'none';
+  setProgress(2);
+}
+
+function goStep3() {
+  const tier = document.getElementById('nodeTier');
+  const tierLabel = tier.options[tier.selectedIndex].text.split(' — ')[0];
+  const model = document.getElementById('modelType');
+  const modelLabel = model.options[model.selectedIndex].text;
+
+  const earningsMap = { light: '€50-150 / month', standard: '€150-400 / month', professional: '€400-1,000 / month', sovereign: '€1,000+ / month' };
+  const multMap = { light: '1.0x', standard: '1.3x', professional: '2.0x', sovereign: '4.0x' };
+  const tv = tier.value;
+
+  document.getElementById('summaryTier').textContent = tierLabel;
+  document.getElementById('summaryMultiplier').textContent = multMap[tv] || '—';
+  document.getElementById('summaryEarnings').textContent = earningsMap[tv] || '—';
+  document.getElementById('summaryModel').textContent = modelLabel;
+
+  document.getElementById('step1Content').style.display = 'none';
+  document.getElementById('step2Content').style.display = 'none';
+  document.getElementById('step3Content').style.display = 'block';
+  setProgress(3);
+}
+
+function setProgress(n) {
+  for (let i = 1; i <= 3; i++) {
+    document.getElementById('step' + i).classList.toggle('active', i <= n);
+  }
+}
+
+async function registerNode() {
+  const address = document.getElementById('walletAddress').value.trim();
+  const statusDiv = document.getElementById('status');
+  const regBtn = document.getElementById('registerBtn');
+  const successLink = document.getElementById('successLink');
+
+  statusDiv.className = 'status';
+  statusDiv.style.display = 'none';
+  successLink.style.display = 'none';
+
+  if (!address.startsWith('addr_test1')) {
+    statusDiv.className = 'status error';
+    statusDiv.innerHTML = 'Invalid address. Must start with <strong>addr_test1</strong> for testnet.';
+    statusDiv.style.display = 'block';
+    return;
+  }
+
+  statusDiv.className = 'status loading';
+  statusDiv.innerHTML = '<div class="spinner"></div>Registering your node on testnet...';
+  statusDiv.style.display = 'block';
+  regBtn.disabled = true;
+
+  await new Promise(r => setTimeout(r, 2000));
+
+  const hash = Array.from({length: 64}, () => '0123456789abcdef'[Math.floor(Math.random() * 16)]).join('');
+  const name = document.getElementById('nodeName').value.trim() || 'Unnamed Node';
+  const tier = document.getElementById('nodeTier').value;
+  const tierLabel = document.getElementById('nodeTier').options[document.getElementById('nodeTier').selectedIndex].text.split(' — ')[0];
+
+  statusDiv.className = 'status success';
+  statusDiv.innerHTML = `
+    <strong>Node registered successfully!</strong><br><br>
+    <strong>${name}</strong> · ${tierLabel} Tier<br><br>
+    TX Hash: <code>${hash}</code><br><br>
+    <a href="https://preview.cardanoscan.io/transaction/${hash}" target="_blank">View on Cardanoscan →</a>
+    <br><br>
+    <span style="font-size:0.7rem;color:#6a6b64;">* Testnet simulation — real verification coming with mainnet</span>
+  `;
+  statusDiv.style.display = 'block';
+  successLink.style.display = 'block';
+  regBtn.disabled = false;
+}
+</script>
+
+</body>
+</html>
