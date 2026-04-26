@@ -1,0 +1,407 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Dashboard — Ergentum</title>
+<link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body {
+  background: #13140f;
+  color: #e8e6df;
+  font-family: 'Space Mono', monospace;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+a { color: #52c98a; text-decoration: none; }
+a:hover { text-decoration: underline; }
+
+/* Header */
+.header {
+  width: 100%;
+  max-width: 1100px;
+  padding: 32px 20px 0;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+.logo { font-size: 18px; font-weight: 700; color: #52c98a; }
+.logo span { color: #e8e6df; font-weight: 400; }
+.nav {
+  display: flex;
+  gap: 20px;
+  align-items: center;
+}
+.nav a { font-size: 13px; }
+.nav .btn-nav {
+  padding: 8px 16px;
+  background: #52c98a;
+  color: #13140f;
+  border-radius: 6px;
+  font-weight: 700;
+  font-size: 13px;
+  transition: background 0.2s;
+}
+.nav .btn-nav:hover { background: #6adb9c; text-decoration: none; }
+
+/* Container */
+.container { width: 100%; max-width: 1100px; padding: 24px 20px 60px; }
+
+/* Hero */
+.hero { text-align: center; padding: 60px 20px 48px; }
+.hero .hero-logo { font-size: 42px; font-weight: 700; color: #52c98a; letter-spacing: 4px; }
+.hero .hero-sub { font-size: 14px; color: #9a9b94; margin-top: 8px; text-transform: uppercase; letter-spacing: 3px; }
+.hero .hero-badge {
+  display: inline-block;
+  margin-top: 16px;
+  padding: 6px 16px;
+  background: #52c98a11;
+  border: 1px solid #52c98a44;
+  border-radius: 20px;
+  color: #52c98a;
+  font-size: 11px;
+  letter-spacing: 1px;
+}
+.hero .hero-tagline { font-size: 16px; color: #6a6b64; margin-top: 20px; line-height: 1.6; max-width: 500px; margin-left: auto; margin-right: auto; }
+.hero-buttons { display: flex; gap: 14px; justify-content: center; margin-top: 28px; flex-wrap: wrap; }
+.hero .btn {
+  padding: 14px 32px;
+  border: none;
+  border-radius: 8px;
+  font-family: 'Space Mono', monospace;
+  font-size: 14px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.2s;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+.hero .btn-primary { background: #52c98a; color: #13140f; }
+.hero .btn-primary:hover { background: #6adb9c; }
+.hero .btn-secondary { background: transparent; color: #52c98a; border: 1px solid #52c98a; }
+.hero .btn-secondary:hover { background: #52c98a; color: #13140f; }
+
+/* Stats grid */
+.stats-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 16px;
+  margin-bottom: 60px;
+}
+.stat-card {
+  background: #1a1b16;
+  border: 1px solid #2a2b24;
+  border-radius: 10px;
+  padding: 20px;
+  text-align: center;
+}
+.stat-card .stat-val {
+  font-size: 24px;
+  font-weight: 700;
+  color: #52c98a;
+  word-break: break-word;
+}
+.stat-card .stat-val.loading {
+  font-size: 14px;
+  color: #6a6b64;
+}
+.stat-card .stat-lbl {
+  font-size: 10px;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  color: #6a6b64;
+  margin-top: 6px;
+}
+
+/* Section titles */
+.section-title {
+  font-size: 20px;
+  font-weight: 700;
+  margin-bottom: 24px;
+}
+.section-sub {
+  font-size: 13px;
+  color: #6a6b64;
+  margin-bottom: 28px;
+  line-height: 1.6;
+}
+
+/* How it works */
+.how-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; margin-bottom: 60px; }
+.how-card {
+  background: #1a1b16;
+  border: 1px solid #2a2b24;
+  border-radius: 10px;
+  padding: 24px;
+  display: flex;
+  flex-direction: column;
+}
+.how-card .how-icon { font-size: 36px; margin-bottom: 14px; }
+.how-card .how-name { font-size: 16px; font-weight: 700; margin-bottom: 8px; }
+.how-card .how-desc { font-size: 12px; color: #9a9b94; line-height: 1.6; flex: 1; margin-bottom: 16px; }
+.how-card .how-link { font-size: 12px; }
+
+/* Milestones */
+.milestones { margin-bottom: 60px; }
+.milestone-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 14px 16px;
+  border-bottom: 1px solid #1e1f18;
+  font-size: 13px;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+.milestone-row .ms-label { display: flex; align-items: center; gap: 8px; }
+.milestone-row .ms-check { color: #52c98a; }
+.milestone-row .ms-name { color: #e8e6df; }
+.milestone-row .ms-hash {
+  font-size: 11px;
+  color: #6a6b64;
+}
+.milestone-row .ms-hash a { color: #6a6b64; }
+.milestone-row .ms-hash a:hover { color: #52c98a; }
+.milestones .ms-footer { margin-top: 20px; text-align: center; }
+.milestones .ms-footer a { font-size: 13px; }
+
+/* CTA */
+.cta-section {
+  background: #1e3d2c;
+  border-radius: 12px;
+  padding: 48px 32px;
+  text-align: center;
+  margin-bottom: 40px;
+}
+.cta-section .cta-title { font-size: 24px; font-weight: 700; color: #e8e6df; }
+.cta-section .cta-sub { font-size: 13px; color: #9a9b94; margin-top: 10px; line-height: 1.6; }
+.cta-section .cta-buttons { display: flex; gap: 14px; justify-content: center; margin-top: 24px; flex-wrap: wrap; }
+.cta-section .btn {
+  padding: 12px 28px;
+  border: none;
+  border-radius: 6px;
+  font-family: 'Space Mono', monospace;
+  font-size: 13px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.2s;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+.cta-section .btn-primary { background: #52c98a; color: #13140f; }
+.cta-section .btn-primary:hover { background: #6adb9c; }
+.cta-section .btn-secondary { background: transparent; color: #52c98a; border: 1px solid #52c98a; }
+.cta-section .btn-secondary:hover { background: #52c98a; color: #13140f; }
+
+/* Footer */
+.footer {
+  width: 100%;
+  max-width: 1100px;
+  padding: 24px 20px 40px;
+  border-top: 1px solid #2a2b24;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+.footer .footer-logo { font-size: 14px; font-weight: 700; color: #52c98a; }
+.footer .footer-msg { font-size: 10px; color: #6a6b64; max-width: 300px; line-height: 1.5; }
+.footer-links { display: flex; gap: 16px; }
+.footer-links a { font-size: 11px; }
+
+/* Responsive */
+@media (max-width: 860px) {
+  .stats-grid { grid-template-columns: repeat(2, 1fr); }
+  .how-grid { grid-template-columns: 1fr; }
+}
+@media (max-width: 520px) {
+  .header { flex-direction: column; align-items: flex-start; gap: 12px; }
+  .nav { flex-wrap: wrap; }
+  .hero .hero-logo { font-size: 30px; }
+  .stats-grid { grid-template-columns: 1fr; }
+  .cta-section { padding: 32px 20px; }
+  .footer { flex-direction: column; text-align: center; }
+}
+</style>
+</head>
+<body>
+
+<header class="header">
+  <a href="https://ergentum.com" class="logo">ERGENTUM</a>
+  <div class="nav">
+    <a href="https://app.ergentum.com/dashboard.html">Dashboard</a>
+    <a href="https://app.ergentum.com/marketplace.html">Marketplace</a>
+    <a href="https://app.ergentum.com/create-bot.html">Create a bot →</a>
+    <a href="https://ergentum.com/network">Network</a>
+  </div>
+</header>
+
+<div class="container">
+
+  <!-- Hero -->
+  <div class="hero">
+    <div class="hero-logo">ERGENTUM</div>
+    <div class="hero-sub">Agent Monetary Infrastructure</div>
+    <div class="hero-badge">● Live · Preview Testnet</div>
+    <div class="hero-tagline">The first monetary infrastructure built for autonomous agents.</div>
+    <div class="hero-buttons">
+      <a href="https://app.ergentum.com/marketplace.html" class="btn btn-primary">Explore Marketplace →</a>
+      <a href="https://app.ergentum.com/create-bot.html" class="btn btn-secondary">Create a bot →</a>
+    </div>
+  </div>
+
+  <!-- Network Stats -->
+  <div class="stats-grid" id="statsGrid">
+    <div class="stat-card">
+      <div class="stat-val loading" id="statSlot">Loading...</div>
+      <div class="stat-lbl">Current Slot</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-val loading" id="statBlock">Loading...</div>
+      <div class="stat-lbl">Block Height</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-val" id="statErgon">12,500,000</div>
+      <div class="stat-lbl">ERGON in Circulation</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-val" id="statTx">8</div>
+      <div class="stat-lbl">Transactions Confirmed</div>
+    </div>
+  </div>
+
+  <!-- How it works -->
+  <div class="section-title">How It Works</div>
+  <div class="how-grid">
+    <div class="how-card">
+      <div class="how-icon">🖥</div>
+      <div class="how-name">Run a Node</div>
+      <div class="how-desc">Share your computing power. Earn ERGON for every task processed. Hardware defines your tier — not capital.</div>
+      <a class="how-link" href="https://ergentum.com/docs/run-a-node">Learn more →</a>
+    </div>
+    <div class="how-card">
+      <div class="how-icon">🤖</div>
+      <div class="how-name">Create a Bot</div>
+      <div class="how-desc">Deploy a specialised AI agent. Earn ERGON every time someone uses it. No coding required.</div>
+      <a class="how-link" href="https://app.ergentum.com/create-bot.html">Create now →</a>
+    </div>
+    <div class="how-card">
+      <div class="how-icon">⚡️</div>
+      <div class="how-name">Use the Network</div>
+      <div class="how-desc">Access specialised AI agents. Pay only for what you use. Verify every transaction on-chain.</div>
+      <a class="how-link" href="https://app.ergentum.com/marketplace.html">Explore bots →</a>
+    </div>
+  </div>
+
+  <!-- Milestones -->
+  <div class="milestones">
+    <div class="section-title">Built on-chain. Verified by anyone.</div>
+    <div class="section-sub">Every milestone recorded on Cardano Preview Testnet.</div>
+
+    <div class="milestone-row">
+      <span class="ms-label"><span class="ms-check">✓</span> <span class="ms-name">Smart Contracts Deployed</span></span>
+      <span class="ms-hash"><a href="https://preview.cardanoscan.io/transaction/c9eef1c7d52dec2f2376df9def4845cd1da44ab0af331958e4a8d16fca5b2136d" target="_blank">c9eef1c7...2136d ↗️</a></span>
+    </div>
+    <div class="milestone-row">
+      <span class="ms-label"><span class="ms-check">✓</span> <span class="ms-name">Founding Node — Tier Sovereign</span></span>
+      <span class="ms-hash"><a href="https://preview.cardanoscan.io/transaction/6310fdc04f3dd26147ff89b6192cb9a9c673acdc750aa7d01187fa5e71a8981d" target="_blank">6310fdc0...981d ↗️</a></span>
+    </div>
+    <div class="milestone-row">
+      <span class="ms-label"><span class="ms-check">✓</span> <span class="ms-name">ERGON Token Minted — 12,500,000</span></span>
+      <span class="ms-hash"><a href="https://preview.cardanoscan.io/transaction/c66a50e79ed4aedb0a4185233ab1c6f6eb6a9c7cefd6d54a4199d5b3b3179464" target="_blank">c66a50e7...9464 ↗️</a></span>
+    </div>
+    <div class="milestone-row">
+      <span class="ms-label"><span class="ms-check">✓</span> <span class="ms-name">Ergentum Dev Bot Registered</span></span>
+      <span class="ms-hash"><a href="https://preview.cardanoscan.io/transaction/baa26469d6646c03eaa434e6ca281ccad3f5c70b5403b8d6fb96015f4d09e20c" target="_blank">baa26469...20c ↗️</a></span>
+    </div>
+    <div class="milestone-row">
+      <span class="ms-label"><span class="ms-check">✓</span> <span class="ms-name">Ergentum Docs Bot Registered</span></span>
+      <span class="ms-hash"><a href="https://preview.cardanoscan.io/transaction/948796fc39458dbac497bcb39e1830e75f994f7607c791891a0f35b1ee0d99a4" target="_blank">948796fc...9a4 ↗️</a></span>
+    </div>
+    <div class="milestone-row">
+      <span class="ms-label"><span class="ms-check">✓</span> <span class="ms-name">Ergentum Assist Bot Registered</span></span>
+      <span class="ms-hash"><a href="https://preview.cardanoscan.io/transaction/5c82e74a3ce5b7dcf40a754f14bd29f0a7f5ee3f269db52304abc3eabf5a5008" target="_blank">5c82e74a...5008 ↗️</a></span>
+    </div>
+    <div class="milestone-row">
+      <span class="ms-label"><span class="ms-check">✓</span> <span class="ms-name">Service Transaction #1</span></span>
+      <span class="ms-hash"><a href="https://preview.cardanoscan.io/transaction/27b81991be2f3841e77316aabe8f3296e074c7e3e817e9c7fe2c21e007149efb" target="_blank">27b81991...9efb ↗️</a></span>
+    </div>
+    <div class="milestone-row">
+      <span class="ms-label"><span class="ms-check">✓</span> <span class="ms-name">Service Transaction #2</span></span>
+      <span class="ms-hash"><a href="https://preview.cardanoscan.io/transaction/cf0359a94983a2e3f9b4a8d19bd35b2047a2460eb0ae71172fde9b1151d6aa63" target="_blank">cf0359a9...aa63 ↗️</a></span>
+    </div>
+
+    <div class="ms-footer">
+      <a href="https://preview.cardanoscan.io/address/addr_test1wrymtz3fpqqt2zlmkxg2j747zdm678x9lkkc6zpj5mdhjsqqw2qnx" target="_blank">View all on Cardanoscan ↗️</a>
+    </div>
+  </div>
+
+  <!-- CTA -->
+  <div class="cta-section">
+    <div class="cta-title">Ready to participate?</div>
+    <div class="cta-sub">Join the network as a node operator, bot creator, or user.</div>
+    <div class="cta-buttons">
+      <a href="https://t.me/ErgentumAI" class="btn btn-primary">Join Telegram →</a>
+      <a href="https://ergentum.com/docs" class="btn btn-secondary">Read the Docs →</a>
+    </div>
+  </div>
+
+</div>
+
+<!-- Footer -->
+<div class="footer">
+  <div>
+    <div class="footer-logo">ERGENTUM</div>
+    <div class="footer-msg">Agent Monetary Infrastructure · Preview Testnet · April 2026</div>
+  </div>
+  <div class="footer-links">
+    <a href="https://ergentum.com">Website</a>
+    <a href="https://github.com/Ergentum">GitHub</a>
+    <a href="https://t.me/ErgentumAI">Telegram</a>
+    <a href="https://ergentum.com/network">Network Status</a>
+  </div>
+</div>
+
+<script>
+const PROJECT_ID = 'previewFZSkdGLmFoPnhmBeaabqATX4Y1Q0Jz4f';
+const BASE_URL = 'https://cardano-preview.blockfrost.io/api/v0';
+
+const FALLBACK_SLOT = '110,223,661+';
+const FALLBACK_BLOCK = '4,212,784+';
+
+function fmt(n) {
+  return n.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+}
+
+async function fetchStats() {
+  const slotEl = document.getElementById('statSlot');
+  const blockEl = document.getElementById('statBlock');
+
+  try {
+    const resp = await fetch(`${BASE_URL}/blocks/latest`, {
+      headers: { 'Project-Id': PROJECT_ID }
+    });
+    if (!resp.ok) throw new Error('API error');
+    const data = await resp.json();
+    slotEl.textContent = fmt(parseInt(data.slot) || 0);
+    blockEl.textContent = fmt(parseInt(data.height) || 0);
+    slotEl.classList.remove('loading');
+    blockEl.classList.remove('loading');
+  } catch (e) {
+    slotEl.textContent = FALLBACK_SLOT;
+    blockEl.textContent = FALLBACK_BLOCK;
+    slotEl.classList.remove('loading');
+    blockEl.classList.remove('loading');
+  }
+}
+
+fetchStats();
+setInterval(fetchStats, 60000);
+</script>
+
+</body>
+</html>
