@@ -196,6 +196,17 @@ select option { background: #1e1f18; color: #e8e6df; }
 /* Back link */
 .back-link { text-align: center; margin-top: 32px; font-size: 13px; }
 
+/* Field errors */
+.field-error {
+  color: #ef4444;
+  font-size: 0.75rem;
+  margin-top: 6px;
+  display: none;
+  line-height: 1.4;
+}
+.field-error.visible { display: block; }
+input.error, select.error, textarea.error { border-color: #ef4444; }
+
 /* Responsive */
 @media (max-width: 520px) {
   .header { flex-direction: column; gap: 12px; align-items: flex-start; }
@@ -242,12 +253,13 @@ select option { background: #1e1f18; color: #e8e6df; }
 
     <div class="form-group">
       <label>Bot Name</label>
-      <input type="text" id="botName" placeholder='e.g. "Legal Assistant"' maxlength="80">
+      <input type="text" id="botName" placeholder='e.g. "Legal Assistant"' maxlength="80" oninput="clearError('botNameErr')">
+      <div class="field-error" id="botNameErr">Bot name is required.</div>
     </div>
 
     <div class="form-group">
       <label>Category</label>
-      <select id="botCategory">
+      <select id="botCategory" onchange="clearError('botCategoryErr')">
         <option value="">Select a category</option>
         <option value="General">General</option>
         <option value="Technical">Technical</option>
@@ -257,20 +269,23 @@ select option { background: #1e1f18; color: #e8e6df; }
         <option value="Education">Education</option>
         <option value="Other">Other</option>
       </select>
+      <div class="field-error" id="botCategoryErr">Please select a category.</div>
     </div>
 
     <div class="form-group">
       <label>Description</label>
-      <textarea id="botDesc" placeholder="What does your bot do? Be specific." maxlength="500"></textarea>
+      <textarea id="botDesc" placeholder="What does your bot do? Be specific." maxlength="500" oninput="clearError('botDescErr')"></textarea>
+      <div class="field-error" id="botDescErr">Description must be at least 20 characters.</div>
     </div>
 
     <div class="form-group">
       <label>Price per use (tADA)</label>
-      <input type="number" id="botPrice" placeholder="e.g. 0.5" step="0.01" min="0">
+      <input type="number" id="botPrice" placeholder="e.g. 0.5" step="0.01" min="0" oninput="clearError('botPriceErr')">
+      <div class="field-error" id="botPriceErr">Price must be a number greater than 0.</div>
     </div>
 
     <div class="buttons">
-      <button class="btn btn-primary" onclick="goStep(2)">Next →</button>
+      <button class="btn btn-primary" onclick="validateStep1()">Next →</button>
     </div>
   </div>
 
@@ -284,7 +299,8 @@ select option { background: #1e1f18; color: #e8e6df; }
       <textarea id="botPrompt" placeholder='You are a specialised assistant for [field].
 Your expertise: ...
 Your rules: ...
-Your tone: ...'></textarea>
+Your tone: ...' oninput="clearError('botPromptErr')"></textarea>
+      <div class="field-error" id="botPromptErr">System prompt must be at least 50 characters.</div>
     </div>
 
     <div class="checkbox-group">
@@ -292,11 +308,12 @@ Your tone: ...'></textarea>
         <input type="checkbox" id="guidelinesCheck">
         <span>I confirm this bot follows Ergentum community guidelines</span>
       </label>
+      <div class="field-error" id="guidelinesErr">You must confirm the guidelines.</div>
     </div>
 
     <div class="buttons">
       <button class="btn btn-secondary" onclick="goStep(1)">← Back</button>
-      <button class="btn btn-primary" id="step2Next" onclick="goStep(3)" disabled>Next →</button>
+      <button class="btn btn-primary" id="step2Next" onclick="validateStep2()">Next →</button>
     </div>
   </div>
 
@@ -355,6 +372,24 @@ const SCRIPT_ADDR = 'addr_test1wrymtz3fpqqt2zlmkxg2j747zdm678x9lkkc6zpj5mdhjsqqw
 const POLICY_ID = 'f0aed7733ac89c0ad46bccb3f9b730edec6ccfbc68b2c7890019540b';
 const ERGON_HEX = 'f0aed7733ac89c0ad46bccb3f9b730edec6ccfbc68b2c7890019540b4552474f4e';
 
+// ── Helpers ─────────────────────────────────────────
+function showError(id) {
+  document.getElementById(id).classList.add('visible');
+}
+function clearError(id) {
+  document.getElementById(id).classList.remove('visible');
+}
+function showFieldError(inputId, errId) {
+  const el = document.getElementById(inputId);
+  el.classList.add('error');
+  showError(errId);
+  el.addEventListener('input', function onFix() {
+    el.classList.remove('error');
+    clearError(errId);
+    el.removeEventListener('input', onFix);
+  }, { once: true });
+}
+
 // ── Step navigation ─────────────────────────────────
 function goStep(n) {
   document.querySelectorAll('.step').forEach(s => s.classList.remove('active'));
@@ -365,9 +400,37 @@ function goStep(n) {
   if (n === 3) fillSummary();
 }
 
-// ── Guidelines checkbox ────────────────────────────
+// ── Validation: Step 1 → Step 2 ────────────────────
+function validateStep1() {
+  const name = document.getElementById('botName').value.trim();
+  const cat = document.getElementById('botCategory').value;
+  const desc = document.getElementById('botDesc').value.trim();
+  const price = document.getElementById('botPrice').value;
+  let valid = true;
+
+  if (!name) { showFieldError('botName', 'botNameErr'); valid = false; }
+  if (!cat) { showFieldError('botCategory', 'botCategoryErr'); valid = false; }
+  if (desc.length < 20) { showFieldError('botDesc', 'botDescErr'); valid = false; }
+  if (!price || parseFloat(price) <= 0) { showFieldError('botPrice', 'botPriceErr'); valid = false; }
+
+  if (valid) goStep(2);
+}
+
+// ── Validation: Step 2 → Step 3 ────────────────────
+function validateStep2() {
+  const prompt = document.getElementById('botPrompt').value.trim();
+  const checked = document.getElementById('guidelinesCheck').checked;
+  let valid = true;
+
+  if (prompt.length < 50) { showFieldError('botPrompt', 'botPromptErr'); valid = false; }
+  if (!checked) { showError('guidelinesErr'); valid = false; }
+
+  if (valid) goStep(3);
+}
+
+// ── Clear guidelines error when checkbox changes ────
 document.getElementById('guidelinesCheck').addEventListener('change', function() {
-  document.getElementById('step2Next').disabled = !this.checked;
+  if (this.checked) clearError('guidelinesErr');
 });
 
 // ── Fill summary ────────────────────────────────────
@@ -391,7 +454,6 @@ async function deployBot() {
   statusDiv.style.display = 'none';
   successLink.style.display = 'none';
 
-  // Validate address format
   if (!address.startsWith('addr_test1')) {
     statusDiv.className = 'status error';
     statusDiv.innerHTML = 'Invalid address. Must start with <strong>addr_test1</strong> for testnet.';
@@ -399,7 +461,6 @@ async function deployBot() {
     return;
   }
 
-  // Validate all fields filled
   const name = document.getElementById('botName').value.trim();
   const cat = document.getElementById('botCategory').value;
   const desc = document.getElementById('botDesc').value.trim();
@@ -412,7 +473,6 @@ async function deployBot() {
     return;
   }
 
-  // Loading
   statusDiv.className = 'status loading';
   statusDiv.innerHTML = '<div class="spinner"></div>Checking wallet balance on testnet...';
   statusDiv.style.display = 'block';
@@ -437,7 +497,6 @@ async function deployBot() {
       return;
     }
 
-    // Simulated TX hash
     const hash = Array.from({length: 64}, () => '0123456789abcdef'[Math.floor(Math.random() * 16)]).join('');
 
     statusDiv.className = 'status success';
@@ -467,7 +526,8 @@ function resetForm() {
   document.getElementById('botPrompt').value = '';
   document.getElementById('walletAddress').value = '';
   document.getElementById('guidelinesCheck').checked = false;
-  document.getElementById('step2Next').disabled = true;
+  ['botName','botCategory','botDesc','botPrice','botPrompt'].forEach(id => document.getElementById(id).classList.remove('error'));
+  ['botNameErr','botCategoryErr','botDescErr','botPriceErr','botPromptErr','guidelinesErr'].forEach(id => clearError(id));
   document.getElementById('status').className = 'status';
   document.getElementById('status').style.display = 'none';
   document.getElementById('successLink').style.display = 'none';
