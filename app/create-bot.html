@@ -207,6 +207,81 @@ select option { background: #1e1f18; color: #e8e6df; }
 .field-error.visible { display: block; }
 input.error, select.error, textarea.error { border-color: #ef4444; }
 
+/* Field hints */
+.field-hint {
+  color: #6a6b64;
+  font-size: 0.7rem;
+  margin-top: 6px;
+  line-height: 1.4;
+}
+
+/* Examples section */
+.examples-toggle {
+  background: none;
+  border: 1px solid #2a2b24;
+  border-radius: 6px;
+  padding: 14px 16px;
+  width: 100%;
+  text-align: left;
+  color: #52c98a;
+  font-family: 'Space Mono', monospace;
+  font-size: 13px;
+  cursor: pointer;
+  transition: border-color 0.2s;
+  margin-bottom: 16px;
+}
+.examples-toggle:hover { border-color: #52c98a; }
+.examples-toggle .arrow { float: right; transition: transform 0.2s; }
+.examples-toggle.open .arrow { transform: rotate(180deg); }
+
+.examples-content { display: none; margin-bottom: 32px; }
+.examples-content.open { display: block; }
+
+.example-card {
+  background: #1a1b16;
+  border: 1px solid #2a2b24;
+  border-radius: 8px;
+  padding: 16px;
+  margin-bottom: 14px;
+  transition: border-color 0.2s;
+}
+.example-card:hover { border-color: #3a4b3e; }
+.example-card .ex-name { font-size: 14px; font-weight: 700; color: #52c98a; }
+.example-card .ex-meta { font-size: 11px; color: #6a6b64; margin-top: 4px; }
+.example-card .ex-desc { font-size: 12px; color: #9a9b94; margin-top: 8px; line-height: 1.5; }
+.example-card .ex-prompt {
+  font-size: 11px;
+  color: #7a7b74;
+  margin-top: 8px;
+  padding: 8px 10px;
+  background: #13140f;
+  border-radius: 4px;
+  line-height: 1.5;
+  max-height: 80px;
+  overflow: hidden;
+  position: relative;
+}
+.example-card .ex-prompt::after {
+  content: '';
+  position: absolute;
+  bottom: 0; left: 0; right: 0;
+  height: 24px;
+  background: linear-gradient(transparent, #13140f);
+}
+.btn-use {
+  margin-top: 10px;
+  padding: 6px 14px;
+  background: transparent;
+  border: 1px solid #52c98a;
+  border-radius: 4px;
+  color: #52c98a;
+  font-family: 'Space Mono', monospace;
+  font-size: 11px;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+.btn-use:hover { background: #52c98a; color: #13140f; }
+
 /* Responsive */
 @media (max-width: 520px) {
   .header { flex-direction: column; gap: 12px; align-items: flex-start; }
@@ -251,9 +326,41 @@ input.error, select.error, textarea.error { border-color: #ef4444; }
     <h2 class="step-title">1. Bot Identity</h2>
     <p class="step-desc">What is your bot? Who is it for? What does it do?</p>
 
+    <!-- Examples Toggle -->
+    <button class="examples-toggle" onclick="toggleExamples()" id="exToggle">
+      💡 Need inspiration? See examples
+      <span class="arrow">▼</span>
+    </button>
+    <div class="examples-content" id="exContent">
+      <!-- Legal Assistant -->
+      <div class="example-card">
+        <div class="ex-name">Legal Assistant</div>
+        <div class="ex-meta">Legal · 1.0 tADA</div>
+        <div class="ex-desc">Helps people understand their basic legal rights in plain English</div>
+        <div class="ex-prompt">"You are a legal information assistant. You explain legal concepts in simple language. You never give specific legal advice — always recommend consulting a qualified lawyer for personal situations."</div>
+        <button class="btn-use" onclick="useTemplate('Legal Assistant','Legal','Helps people understand their basic legal rights in plain English','1.0','You are a legal information assistant. You explain legal concepts in simple language. You never give specific legal advice — always recommend consulting a qualified lawyer for personal situations.')">Use this template →</button>
+      </div>
+      <!-- Recipe Bot -->
+      <div class="example-card">
+        <div class="ex-name">Recipe Bot</div>
+        <div class="ex-meta">General · 0.2 tADA</div>
+        <div class="ex-desc">Suggests recipes based on ingredients you have at home</div>
+        <div class="ex-prompt">"You are a creative cooking assistant. When given a list of ingredients, suggest 3 simple recipes with step-by-step instructions. Focus on quick meals under 30 minutes."</div>
+        <button class="btn-use" onclick="useTemplate('Recipe Bot','General','Suggests recipes based on ingredients you have at home','0.2','You are a creative cooking assistant. When given a list of ingredients, suggest 3 simple recipes with step-by-step instructions. Focus on quick meals under 30 minutes.')">Use this template →</button>
+      </div>
+      <!-- Tax Helper -->
+      <div class="example-card">
+        <div class="ex-name">Tax Helper</div>
+        <div class="ex-meta">Financial · 0.5 tADA</div>
+        <div class="ex-desc">Explains tax concepts for freelancers and small businesses</div>
+        <div class="ex-prompt">"You are a tax information assistant for freelancers. You explain tax concepts clearly. Always clarify that your information is general guidance — recommend a certified accountant for personal tax situations."</div>
+        <button class="btn-use" onclick="useTemplate('Tax Helper','Financial','Explains tax concepts for freelancers and small businesses','0.5','You are a tax information assistant for freelancers. You explain tax concepts clearly. Always clarify that your information is general guidance — recommend a certified accountant for personal tax situations.')">Use this template →</button>
+      </div>
+    </div>
+
     <div class="form-group">
       <label>Bot Name</label>
-      <input type="text" id="botName" placeholder='e.g. "Legal Assistant"' maxlength="80" oninput="clearError('botNameErr')">
+      <input type="text" id="botName" placeholder='e.g. Legal Assistant, Tax Helper, Recipe Bot' maxlength="80" oninput="clearError('botNameErr')">
       <div class="field-error" id="botNameErr">Bot name is required.</div>
     </div>
 
@@ -274,13 +381,15 @@ input.error, select.error, textarea.error { border-color: #ef4444; }
 
     <div class="form-group">
       <label>Description</label>
-      <textarea id="botDesc" placeholder="What does your bot do? Be specific." maxlength="500" oninput="clearError('botDescErr')"></textarea>
+      <textarea id="botDesc" placeholder="e.g. A bot that helps small business owners understand their tax obligations in simple language" maxlength="500" oninput="clearError('botDescErr')"></textarea>
+      <div class="field-hint">What does your bot do? Who is it for? Keep it simple — one sentence is enough.</div>
       <div class="field-error" id="botDescErr">Description must be at least 20 characters.</div>
     </div>
 
     <div class="form-group">
       <label>Price per use (tADA)</label>
       <input type="number" id="botPrice" placeholder="e.g. 0.5" step="0.01" min="0" oninput="clearError('botPriceErr')">
+      <div class="field-hint">0.5 tADA ≈ €0.15 · Start low, adjust later</div>
       <div class="field-error" id="botPriceErr">Price must be a number greater than 0.</div>
     </div>
 
@@ -300,6 +409,7 @@ input.error, select.error, textarea.error { border-color: #ef4444; }
 Your expertise: ...
 Your rules: ...
 Your tone: ...' oninput="clearError('botPromptErr')"></textarea>
+      <div class="field-hint">This is what your bot will always remember. Be specific about what it should and should not do.</div>
       <div class="field-error" id="botPromptErr">System prompt must be at least 50 characters.</div>
     </div>
 
@@ -432,6 +542,30 @@ function validateStep2() {
 document.getElementById('guidelinesCheck').addEventListener('change', function() {
   if (this.checked) clearError('guidelinesErr');
 });
+
+// ── Examples toggle ─────────────────────────────────
+function toggleExamples() {
+  const toggle = document.getElementById('exToggle');
+  const content = document.getElementById('exContent');
+  toggle.classList.toggle('open');
+  content.classList.toggle('open');
+}
+
+// ── Use template ────────────────────────────────────
+function useTemplate(name, cat, desc, price, prompt) {
+  document.getElementById('botName').value = name;
+  document.getElementById('botCategory').value = cat;
+  document.getElementById('botDesc').value = desc;
+  document.getElementById('botPrice').value = price;
+  document.getElementById('botPrompt').value = prompt;
+
+  // Clear all field errors
+  ['botName','botCategory','botDesc','botPrice','botPrompt'].forEach(id => document.getElementById(id).classList.remove('error'));
+  ['botNameErr','botCategoryErr','botDescErr','botPriceErr','botPromptErr'].forEach(id => clearError(id));
+
+  // Scroll to top of form
+  document.querySelector('.container').scrollIntoView({ behavior: 'smooth' });
+}
 
 // ── Fill summary ────────────────────────────────────
 function fillSummary() {
