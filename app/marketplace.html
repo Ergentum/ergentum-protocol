@@ -66,6 +66,45 @@ a:hover { text-decoration: underline; }
 
 /* Search & Filters */
 .toolbar { margin-bottom: 28px; display: flex; flex-wrap: wrap; gap: 12px; align-items: center; justify-content: space-between; }
+/* Testnet banner */
+.testnet-banner {
+  display: flex;
+  gap: 14px;
+  background: rgba(201,168,76,0.08);
+  border-left: 3px solid #c9a84c;
+  border-radius: 8px;
+  padding: 20px;
+  margin-bottom: 24px;
+  position: relative;
+}
+.testnet-banner.hidden { display: none; }
+.banner-close {
+  position: absolute;
+  top: 10px; right: 12px;
+  background: none;
+  border: none;
+  color: #6a6b64;
+  cursor: pointer;
+  font-size: 16px;
+  font-family: 'Space Mono', monospace;
+}
+.banner-close:hover { color: #e8e6df; }
+.banner-icon { font-size: 28px; line-height: 1; flex-shrink: 0; padding-top: 2px; }
+.banner-title { font-size: 15px; font-weight: 700; color: #e8e6df; margin-bottom: 8px; }
+.banner-text { font-size: 12px; color: #9a9b94; line-height: 1.6; }
+.banner-text a { color: #c9a84c; }
+.faucet-btn {
+  display: inline-block;
+  padding: 10px 22px;
+  background: #c9a84c;
+  color: #13140f;
+  border-radius: 6px;
+  font-weight: 700;
+  font-size: 13px;
+  transition: background 0.2s;
+}
+.faucet-btn:hover { background: #dbb85e; text-decoration: none; }
+
 .search-wrap { flex: 1; min-width: 220px; }
 .search-wrap input {
   width: 100%;
@@ -421,6 +460,36 @@ a:hover { text-decoration: underline; }
     </div>
   </div>
 
+  <!-- Testnet ADA Banner -->
+  <div class="testnet-banner" id="testnetBanner">
+    <button class="banner-close" onclick="closeBanner()">✕</button>
+    <div class="banner-icon">⚡️</div>
+    <div class="banner-content">
+      <div class="banner-title">You're on Testnet &mdash; Everything is free to try</div>
+      <div class="banner-text">
+        To interact with the network you need testnet ADA (tADA). It's completely free &mdash; no real money involved.
+        <br><br>
+        <strong>Here's how to get it in 2 minutes:</strong>
+        <br><br>
+        1. Create a Cardano testnet wallet<br>
+        &nbsp;&nbsp;→ <a href="https://eternl.io" target="_blank">eternl.io</a> or <a href="https://lace.io" target="_blank">lace.io</a> (free browser extension)<br>
+        &nbsp;&nbsp;→ Switch to Preview Testnet in settings<br>
+        &nbsp;&nbsp;→ Copy your wallet address (<code style="font-size:11px;background:#13140f;padding:1px 4px;border-radius:2px;">addr_test1</code>...)
+        <br><br>
+        2. Request free tADA from the faucet<br>
+        &nbsp;&nbsp;→ Click the button below<br>
+        &nbsp;&nbsp;→ Paste your wallet address<br>
+        &nbsp;&nbsp;→ Click Request &mdash; funds arrive in 1-2 minutes
+        <br><br>
+        3. Come back and start exploring!
+        <br><br>
+        <a class="faucet-btn" href="https://docs.cardano.org/cardano-testnet/tools/faucet" target="_blank">Get free tADA →</a>
+        <br><br>
+        <span style="font-size:11px;color:#6a6b64;">tADA has no real value. It's only for testing on Preview Testnet.</span>
+      </div>
+    </div>
+  </div>
+
   <!-- Search & filters -->
   <div class="toolbar">
     <div class="search-wrap">
@@ -646,6 +715,17 @@ async function sendRequest() {
 }
 
 renderBots();
+
+function closeBanner() {
+  document.getElementById('testnetBanner').classList.add('hidden');
+  localStorage.setItem('testnetBannerClosed', 'true');
+}
+
+(function() {
+  if (localStorage.getItem('testnetBannerClosed')) {
+    document.getElementById('testnetBanner').classList.add('hidden');
+  }
+})();
 </script>
 
 </body>
