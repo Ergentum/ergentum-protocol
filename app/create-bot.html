@@ -387,9 +387,15 @@ input.error, select.error, textarea.error { border-color: #ef4444; }
     </div>
 
     <div class="form-group">
-      <label>Price per use (tADA)</label>
+      <label>Your earnings per use (tADA)</label>
       <input type="number" id="botPrice" placeholder="e.g. 0.5" step="0.01" min="0" oninput="clearError('botPriceErr')">
-      <div class="field-hint">0.5 tADA ≈ €0.15 · Start low, adjust later</div>
+      <div class="field-hint">This is what YOU earn every time someone uses your bot. The network adds a small 0.2% fee on top — the user pays that automatically.
+Examples:
+· Simple FAQ bot → 0.1 - 0.5 tADA
+· Specialised advice → 0.5 - 2.0 tADA
+· Complex analysis → 2.0 - 10.0 tADA
+
+Start low. You can adjust later.</div>
       <div class="field-error" id="botPriceErr">Price must be a number greater than 0.</div>
     </div>
 
@@ -408,7 +414,7 @@ input.error, select.error, textarea.error { border-color: #ef4444; }
       <textarea id="botPrompt" placeholder='You are a specialised assistant for [field].
 Your expertise: ...
 Your rules: ...
-Your tone: ...' oninput="clearError('botPromptErr')"></textarea>
+Your tone: ...' oninput="checkStep2Ready()"></textarea>
       <div class="field-hint">This is what your bot will always remember. Be specific about what it should and should not do.</div>
       <div class="field-error" id="botPromptErr">System prompt must be at least 50 characters.</div>
     </div>
@@ -431,6 +437,36 @@ Your tone: ...' oninput="clearError('botPromptErr')"></textarea>
   <div class="step" id="step3">
     <h2 class="step-title">3. Wallet & Deploy</h2>
     <p class="step-desc">Connect your Cardano testnet wallet. You need at least 5 tADA to register a bot.</p>
+
+    <!-- Wallet guide toggle -->
+    <button class="examples-toggle" onclick="toggleWalletGuide()" id="walletToggle">
+      Don't have a Cardano wallet? Here's how →
+      <span class="arrow">▼</span>
+    </button>
+    <div class="examples-content" id="walletGuide">
+      <div style="background:#1a1b16;border:1px solid #2a2b24;border-radius:8px;padding:16px;margin-bottom:20px;font-size:12px;line-height:1.6;color:#9a9b94;">
+        To receive earnings from your bot, you need a Cardano wallet address.
+        <br><br>
+        <strong style="color:#e8e6df;">EASIEST OPTIONS (free):</strong><br><br>
+        1. <strong style="color:#52c98a;">Eternl Wallet</strong> (browser extension)<br>
+        &nbsp;&nbsp;→ <a href="https://eternl.io" target="_blank">eternl.io</a> → Install → Create wallet<br>
+        &nbsp;&nbsp;→ Copy your address (starts with <code style="color:#52c98a;background:#13140f;padding:1px 4px;border-radius:2px;">addr_test1</code> for testnet)
+        <br><br>
+        2. <strong style="color:#52c98a;">Lace Wallet</strong> (browser extension)<br>
+        &nbsp;&nbsp;→ <a href="https://lace.io" target="_blank">lace.io</a> → Install → Create wallet<br>
+        &nbsp;&nbsp;→ Switch to Preview Testnet in settings<br>
+        &nbsp;&nbsp;→ Copy your address
+        <br><br>
+        <strong style="color:#e8e6df;">GET FREE TESTNET ADA:</strong><br><br>
+        After creating your wallet, get free tADA:<br>
+        &nbsp;&nbsp;→ <a href="https://faucet.preview.cardano.org" target="_blank">faucet.preview.cardano.org</a><br>
+        &nbsp;&nbsp;→ Paste your address → Request funds<br>
+        &nbsp;&nbsp;→ Wait 1-2 minutes
+        <br><br>
+        Need help? Ask in our community:<br>
+        &nbsp;&nbsp;→ <a href="https://t.me/ErgentumAI" target="_blank">t.me/ErgentumAI</a>
+      </div>
+    </div>
 
     <div class="form-group">
       <label>Your Cardano Address (testnet)</label>
@@ -538,15 +574,32 @@ function validateStep2() {
   if (valid) goStep(3);
 }
 
-// ── Clear guidelines error when checkbox changes ────
+// ── Step 2: Next button state ──────────────────────
+function checkStep2Ready() {
+  const promptOk = document.getElementById('botPrompt').value.trim().length >= 50;
+  const checked = document.getElementById('guidelinesCheck').checked;
+  document.getElementById('step2Next').disabled = !(promptOk && checked);
+}
 document.getElementById('guidelinesCheck').addEventListener('change', function() {
+  checkStep2Ready();
   if (this.checked) clearError('guidelinesErr');
+});
+document.getElementById('botPrompt').addEventListener('input', function() {
+  clearError('botPromptErr');
 });
 
 // ── Examples toggle ─────────────────────────────────
 function toggleExamples() {
   const toggle = document.getElementById('exToggle');
   const content = document.getElementById('exContent');
+  toggle.classList.toggle('open');
+  content.classList.toggle('open');
+}
+
+// ── Wallet guide toggle ─────────────────────────────
+function toggleWalletGuide() {
+  const toggle = document.getElementById('walletToggle');
+  const content = document.getElementById('walletGuide');
   toggle.classList.toggle('open');
   content.classList.toggle('open');
 }
@@ -577,7 +630,7 @@ function fillSummary() {
   document.getElementById('sumPrompt').textContent = pLen ? pLen + ' chars' : '—';
 }
 
-// ── Deploy bot ──────────────────────────────────────
+// ── Deploy bot (simulated for testnet) ─────────────
 async function deployBot() {
   const address = document.getElementById('walletAddress').value.trim();
   const statusDiv = document.getElementById('status');
@@ -607,48 +660,27 @@ async function deployBot() {
     return;
   }
 
+  // Simulated deployment
   statusDiv.className = 'status loading';
-  statusDiv.innerHTML = '<div class="spinner"></div>Checking wallet balance on testnet...';
+  statusDiv.innerHTML = '<div class="spinner"></div>Connecting to testnet...';
   statusDiv.style.display = 'block';
   deployBtn.disabled = true;
 
-  try {
-    const resp = await fetch(`${BASE_URL}/addresses/${address}`, {
-      headers: { 'Project-Id': PROJECT_ID }
-    });
-    if (!resp.ok) {
-      throw new Error('Blockfrost API error: ' + resp.status + (resp.status === 403 ? ' (invalid project ID)' : ''));
-    }
-    const data = await resp.json();
-    const lovelace = parseInt(data.amount.find(a => a.unit === 'lovelace')?.quantity || '0');
-    const ada = lovelace / 1_000_000;
+  await new Promise(r => setTimeout(r, 2000));
 
-    if (ada < 5) {
-      statusDiv.className = 'status error';
-      statusDiv.innerHTML = `Insufficient balance. You have <strong>${ada.toFixed(2)} tADA</strong> but need at least <strong>5 tADA</strong>.<br><br>Get test ADA from the <a href="https://docs.cardano.org/cardano-testnet/tools/testnet-faucet" target="_blank">Cardano testnet faucet</a>.`;
-      statusDiv.style.display = 'block';
-      deployBtn.disabled = false;
-      return;
-    }
+  const hash = Array.from({length: 64}, () => '0123456789abcdef'[Math.floor(Math.random() * 16)]).join('');
 
-    const hash = Array.from({length: 64}, () => '0123456789abcdef'[Math.floor(Math.random() * 16)]).join('');
-
-    statusDiv.className = 'status success';
-    statusDiv.innerHTML = `
-      <strong>Your bot has been registered!</strong><br><br>
-      TX Hash: <code>${hash}</code><br><br>
-      <a href="https://preview.cardanoscan.io/transaction/${hash}" target="_blank">View on Cardanoscan →</a>
-    `;
-    statusDiv.style.display = 'block';
-    successLink.style.display = 'block';
-    deployBtn.disabled = false;
-
-  } catch (err) {
-    statusDiv.className = 'status error';
-    statusDiv.innerHTML = `Error: ${err.message}` + (err.message.includes('403') ? ' — the Blockfrost API key may need to be configured.' : '');
-    statusDiv.style.display = 'block';
-    deployBtn.disabled = false;
-  }
+  statusDiv.className = 'status success';
+  statusDiv.innerHTML = `
+    <strong>Your bot has been registered!</strong><br><br>
+    TX Hash: <code>${hash}</code><br><br>
+    <a href="https://preview.cardanoscan.io/transaction/${hash}" target="_blank">View on Cardanoscan →</a>
+    <br><br>
+    <span style="font-size:0.7rem;color:#6a6b64;">* Testnet simulation — real verification coming with mainnet</span>
+  `;
+  statusDiv.style.display = 'block';
+  successLink.style.display = 'block';
+  deployBtn.disabled = false;
 }
 
 // ── Reset ────────────────────────────────────────────
