@@ -9,6 +9,23 @@
 <meta charset="<?php bloginfo('charset'); ?>">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <?php wp_head(); ?>
+<style>
+.nav-app {
+  font-size: 0.65rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--ink);
+  background: var(--green);
+  text-decoration: none;
+  padding: 8px 20px;
+  margin-right: 12px;
+  transition: all 0.2s;
+  font-family: var(--mono);
+  border-radius: 0;
+}
+.nav-app:hover { background: #52c98a; }
+@media (max-width: 768px) { .nav-app { display: none; } }
+</style>
 </head>
 <body <?php body_class(); ?>>
 
@@ -99,6 +116,7 @@ $footer_links_resources = ergentum_parse_footer_links(get_theme_mod('ergentum_fo
       <li><a href="/network">Network</a></li>
       <li><a href="/docs">Docs</a></li>
   </ul>
+  <a href="https://app.ergentum.com" class="nav-app">Launch App</a>
   <a href="<?php echo esc_url($nav_cta_url); ?>" class="nav-cta"><?php echo esc_html($nav_cta_text); ?></a>
 	<button class="nav-hamburger" id="nav-hamburger" aria-label="Menu">
   <span></span>
@@ -658,6 +676,22 @@ Inserir no front-page.php ENTRE a secção #progress e a secção #slogans
 const hamburger = document.getElementById('nav-hamburger');
 const navLinks  = document.querySelector('.nav-links');
 const navCta    = document.querySelector('.nav-cta');
+const navApp    = document.querySelector('.nav-app');
+
+// Adicionar Launch App ao menu mobile
+if (navApp && !document.getElementById('nav-app-mobile')) {
+  const appClone = navApp.cloneNode(true);
+  appClone.id = 'nav-app-mobile';
+  appClone.style.display = 'none';
+  appClone.style.background = 'var(--green)';
+  appClone.style.color = 'var(--ink)';
+  appClone.style.padding = '12px 32px';
+  appClone.style.fontSize = '0.75rem';
+  const liApp = document.createElement('li');
+  liApp.id = 'nav-app-mobile-li';
+  liApp.appendChild(appClone);
+  navLinks.appendChild(liApp);
+}
 
 // Adicionar Read Litepaper ao menu mobile — só uma vez
 if (navCta && !document.getElementById('nav-cta-mobile')) {
@@ -676,12 +710,12 @@ hamburger.addEventListener('click', () => {
   hamburger.classList.toggle('open');
   navLinks.classList.toggle('open');
 
-  // Mostrar/esconder o botão mobile dentro do menu
+  const isOpen = navLinks.classList.contains('open');
   const mobileCta = document.getElementById('nav-cta-mobile');
-  if (mobileCta) {
-    mobileCta.style.display = 
-      navLinks.classList.contains('open') ? 'inline-block' : 'none';
-  }
+  const mobileApp = document.getElementById('nav-app-mobile');
+
+  if (mobileCta) mobileCta.style.display = isOpen ? 'inline-block' : 'none';
+  if (mobileApp) mobileApp.style.display = isOpen ? 'inline-block' : 'none';
 });
 
 // Fechar menu quando clica num link
@@ -690,7 +724,9 @@ document.querySelectorAll('.nav-links a').forEach(link => {
     hamburger.classList.remove('open');
     navLinks.classList.remove('open');
     const mobileCta = document.getElementById('nav-cta-mobile');
+    const mobileApp = document.getElementById('nav-app-mobile');
     if (mobileCta) mobileCta.style.display = 'none';
+    if (mobileApp) mobileApp.style.display = 'none';
   });
 });
 </script>
