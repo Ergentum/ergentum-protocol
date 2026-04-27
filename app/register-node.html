@@ -582,11 +582,11 @@ async function registerNode() {
       ai_model: modelLabel,
       api_provider: apiProvider,
       wallet_address: address,
-      status: status
+      status: 'pending'
     }])
     .select();
 
-  console.log('Insert result:', data, error);
+  alert('data: ' + JSON.stringify(data) + ' error: ' + JSON.stringify(error));
 
   if (error) {
     statusDiv.className = 'status error';
