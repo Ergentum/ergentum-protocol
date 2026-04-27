@@ -4,7 +4,6 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Dashboard — Ergentum</title>
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
 <style>
 * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -455,10 +454,20 @@ function fmt(n) {
   return n.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',');
 }
 
-const supabase = (window.supabase || window.supabaseClient).createClient(
-  'https://byafrpxwvrjcsqweohdf.supabase.co',
-  'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJ5YWZycHh3dnJqY3Nxd2VvaGRmIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzcyOTkwNDAsImV4cCI6MjA5Mjg3NTA0MH0.OQDTtjbYLtw20dJ7wCAF3alhg0p2heUbpxVuTWJG13Y'
-);
+const SUPABASE_URL = 'https://byafrpxwvrjcsqweohdf.supabase.co';
+const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJ5YWZycHh3dnJqY3Nxd2VvaGRmIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzcyOTkwNDAsImV4cCI6MjA5Mjg3NTA0MH0.OQDTtjbYLtw20dJ7wCAF3alhg0p2heUbpxVuTWJG13Y';
+
+async function sbCount(table) {
+  const resp = await fetch(`${SUPABASE_URL}/rest/v1/${table}?select=id`, {
+    headers: {
+      'apikey': SUPABASE_KEY,
+      'Authorization': 'Bearer ' + SUPABASE_KEY,
+      'Prefer': 'count=exact'
+    }
+  });
+  if (!resp.ok) throw new Error(`Supabase ${resp.status}`);
+  return resp.headers.get('content-range')?.split('/')[1] || '0';
+}
 
 async function fetchStats() {
   const slotEl = document.getElementById('statSlot');
@@ -483,15 +492,9 @@ async function fetchStats() {
 
   // Supabase stats
   try {
-    const { count: nodeCount } = await supabase
-      .from('nodes')
-      .select('id', { count: 'exact', head: true });
-    const { count: botCount } = await supabase
-      .from('bots')
-      .select('id', { count: 'exact', head: true });
-    const { count: txCount } = await supabase
-      .from('transactions')
-      .select('id', { count: 'exact', head: true });
+    const nodeCount = await sbCount('nodes');
+    const botCount = await sbCount('bots');
+    const txCount = await sbCount('transactions');
 
     document.getElementById('statNodes').textContent = nodeCount ?? '—';
     document.getElementById('statBots').textContent = botCount ?? '—';

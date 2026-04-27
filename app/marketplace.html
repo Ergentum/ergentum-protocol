@@ -4,7 +4,6 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Marketplace — Ergentum</title>
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
 <style>
 * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -564,25 +563,40 @@ a:hover { text-decoration: underline; }
 </div>
 
 <script>
-const supabase = (window.supabase || window.supabaseClient).createClient(
-  'https://byafrpxwvrjcsqweohdf.supabase.co',
-  'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJ5YWZycHh3dnJqY3Nxd2VvaGRmIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzcyOTkwNDAsImV4cCI6MjA5Mjg3NTA0MH0.OQDTtjbYLtw20dJ7wCAF3alhg0p2heUbpxVuTWJG13Y'
-);
+const SUPABASE_URL = 'https://byafrpxwvrjcsqweohdf.supabase.co';
+const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJ5YWZycHh3dnJqY3Nxd2VvaGRmIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzcyOTkwNDAsImV4cCI6MjA5Mjg3NTA0MH0.OQDTtjbYLtw20dJ7wCAF3alhg0p2heUbpxVuTWJG13Y';
+
+async function sbQuery(table, opts = {}) {
+  let url = `${SUPABASE_URL}/rest/v1/${table}?select=*`;
+  if (opts.filter) url += `&${opts.filter}=eq.${opts.value}`;
+  if (opts.order) url += `&order=${opts.order}`;
+  const resp = await fetch(url, {
+    headers: { 'apikey': SUPABASE_KEY, 'Authorization': 'Bearer ' + SUPABASE_KEY }
+  });
+  if (!resp.ok) throw new Error(`Supabase ${resp.status}: ${resp.statusText}`);
+  return resp.json();
+}
+
+async function sbCount(table) {
+  const resp = await fetch(`${SUPABASE_URL}/rest/v1/${table}?select=id`, {
+    headers: {
+      'apikey': SUPABASE_KEY,
+      'Authorization': 'Bearer ' + SUPABASE_KEY,
+      'Prefer': 'count=exact'
+    }
+  });
+  if (!resp.ok) throw new Error(`Supabase ${resp.status}`);
+  return resp.headers.get('content-range')?.split('/')[1] || '0';
+}
 
 let BOTS = [];
 
 async function loadBots() {
   try {
-    const { data, error } = await supabase
-      .from('bots')
-      .select('*')
-      .order('created_at', { ascending: true });
-    if (error) throw error;
-    alert('Bots loaded: ' + JSON.stringify(data));
+    const data = await sbQuery('bots', { order: 'created_at.asc' });
     BOTS = data || [];
   } catch (e) {
     console.error('Failed to load bots:', e);
-    alert('Error loading bots: ' + e.message);
     BOTS = [];
   }
   renderBots();
