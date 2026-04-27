@@ -682,9 +682,12 @@ async function deployBot() {
   statusDiv.innerHTML = `
     <strong>Your bot has been registered!</strong><br><br>
     TX Hash: <code>${hash}</code><br><br>
-    <a href="https://preview.cardanoscan.io/transaction/${hash}" target="_blank">View on Cardanoscan →</a>
-    <br><br>
-    <span style="font-size:0.7rem;color:#6a6b64;">* Testnet simulation — real verification coming with mainnet</span>
+    <span style="font-size:0.7rem;color:#6a6b64;">
+      * This is a testnet simulation hash.<br>
+      Real on-chain verification will be available when mainnet launches.<br><br>
+      Want to see a real Ergentum transaction?<br>
+      → <a href="https://preview.cardanoscan.io/transaction/6310fdc0e543020439ef18ae08344f391f82d28089cb27818ed16ae692da981d" target="_blank" style="color:#52c98a;">View founding node on Cardanoscan ↗️</a>
+    </span>
   `;
   statusDiv.style.display = 'block';
   successLink.style.display = 'block';
