@@ -403,6 +403,42 @@ a:hover { text-decoration: underline; }
 const SUPABASE_URL = 'https://byafrpxwvrjcsqweohdf.supabase.co';
 const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJ5YWZycHh3dnJqY3Nxd2VvaGRmIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzcyOTkwNDAsImV4cCI6MjA5Mjg3NTA0MH0.OQDTtjbYLtw20dJ7wCAF3alhg0p2heUbpxVuTWJG13Y';
 
+async function registerNode(nodeData) {
+  console.log('Attempting to insert node:', nodeData);
+
+  const resp = await fetch(
+    'https://byafrpxwvrjcsqweohdf.supabase.co/rest/v1/nodes',
+    {
+      method: 'POST',
+      headers: {
+        'apikey': SUPABASE_KEY,
+        'Authorization': 'Bearer ' + SUPABASE_KEY,
+        'Content-Type': 'application/json',
+        'Prefer': 'return=representation'
+      },
+      body: JSON.stringify({
+        name: nodeData.name || 'Unnamed Node',
+        tier: nodeData.tier,
+        infrastructure: nodeData.infrastructure,
+        ai_model: nodeData.aiModel,
+        api_provider: nodeData.apiProvider,
+        wallet_address: nodeData.walletAddress,
+        status: nodeData.status || 'pending'
+      })
+    }
+  );
+
+  const result = await resp.json();
+  console.log('Insert response status:', resp.status);
+  console.log('Insert response body:', result);
+
+  if (!resp.ok) {
+    throw new Error(`Insert failed: ${resp.status} - ${JSON.stringify(result)}`);
+  }
+
+  return result;
+}
+
 function onTierChange() {
   const val = document.getElementById('nodeTier').value;
   const info = document.getElementById('tierInfo');
@@ -571,29 +607,15 @@ async function registerNode() {
 
   // Save to Supabase
   try {
-    const resp = await fetch(`${SUPABASE_URL}/rest/v1/nodes`, {
-      method: 'POST',
-      headers: {
-        'apikey': SUPABASE_KEY,
-        'Authorization': 'Bearer ' + SUPABASE_KEY,
-        'Content-Type': 'application/json',
-        'Prefer': 'return=representation'
-      },
-      body: JSON.stringify([{
-        name,
-        tier,
-        infrastructure: infra,
-        ai_model: modelLabel,
-        api_provider: apiProvider,
-        wallet_address: address,
-        status: 'pending'
-      }])
+    await registerNode({
+      name,
+      tier,
+      infrastructure: infra,
+      aiModel: modelLabel,
+      apiProvider,
+      walletAddress: address,
+      status: 'pending'
     });
-
-    if (!resp.ok) {
-      const errText = await resp.text();
-      throw new Error(errText);
-    }
   } catch (e) {
     statusDiv.className = 'status error';
     statusDiv.innerHTML = `Failed to register: ${e.message}`;
