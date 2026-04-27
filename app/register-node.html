@@ -583,29 +583,35 @@ async function registerNode() {
   const modelLabel = document.getElementById('modelType').options[document.getElementById('modelType').selectedIndex].text;
   const apiKey = document.getElementById('apiKey').value.trim();
   const apiProvider = apiKey ? 'custom' : null;
-  let status = 'pending';
+  let status = 'active'; // default for local model
 
-  // Verify external API key with Groq
-  if (apiKey && (modelType === 'external' || modelType === 'hybrid')) {
-    statusDiv.innerHTML = '<div class="spinner"></div>Verifying your API key with Groq...';
-    try {
-      const resp = await fetch('https://api.groq.com/openai/v1/models', {
-        headers: { 'Authorization': 'Bearer ' + apiKey }
-      });
-      if (resp.ok) {
-        status = 'active';
-        statusDiv.innerHTML = '<div class="spinner"></div>API key valid. Registering your node...';
-      } else {
+  // Só verifica API key se for external ou hybrid
+  if (modelType === 'external' || modelType === 'hybrid') {
+    if (apiKey) {
+      statusDiv.innerHTML = '<div class="spinner"></div>Verifying your API key with Groq...';
+      try {
+        const resp = await fetch('https://api.groq.com/openai/v1/models', {
+          headers: { 'Authorization': 'Bearer ' + apiKey }
+        });
+        if (resp.ok) {
+          status = 'active';
+          statusDiv.innerHTML = '<div class="spinner"></div>API key valid. Registering your node...';
+        } else {
+          status = 'pending';
+          statusDiv.innerHTML = '<div class="spinner"></div>API key invalid. Registered as pending.<br><small style="color:#9a9b94;">You can update your key later in node settings.</small>';
+          await new Promise(r => setTimeout(r, 1200));
+        }
+      } catch (e) {
         status = 'pending';
-        statusDiv.innerHTML = '<div class="spinner"></div>API key invalid. Registered as pending.<br><small style="color:#9a9b94;">You can update your key later in node settings.</small>';
+        statusDiv.innerHTML = '<div class="spinner"></div>Could not verify API key. Registered as pending.<br><small style="color:#9a9b94;">Check your key and try again later.</small>';
         await new Promise(r => setTimeout(r, 1200));
       }
-    } catch (e) {
+    } else {
+      // sem API key → pending
       status = 'pending';
-      statusDiv.innerHTML = '<div class="spinner"></div>Could not verify API key. Registered as pending.<br><small style="color:#9a9b94;">Check your key and try again later.</small>';
-      await new Promise(r => setTimeout(r, 1200));
     }
   }
+  // Local model → sempre active
 
   // Save to Supabase
   try {
