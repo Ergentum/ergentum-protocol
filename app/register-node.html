@@ -575,7 +575,7 @@ async function registerNode() {
 
   const { data, error } = await supabase
     .from('nodes')
-    .insert({
+    .insert([{
       name,
       tier,
       infrastructure: infra,
@@ -583,9 +583,10 @@ async function registerNode() {
       api_provider: apiProvider,
       wallet_address: address,
       status: status
-    })
-    .select('id')
-    .single();
+    }])
+    .select();
+
+  console.log('Insert result:', data, error);
 
   if (error) {
     statusDiv.className = 'status error';

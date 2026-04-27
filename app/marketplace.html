@@ -576,7 +576,8 @@ async function loadBots() {
     const { data, error } = await supabase
       .from('bots')
       .select('*')
-      .order('created_at', { ascending: false });
+      .eq('status', 'active')
+      .order('created_at', { ascending: true });
     if (error) throw error;
     BOTS = data || [];
   } catch (e) {

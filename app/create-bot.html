@@ -682,7 +682,7 @@ async function deployBot() {
 
   const { data, error } = await supabase
     .from('bots')
-    .insert({
+    .insert([{
       name,
       category: cat,
       description: desc,
@@ -690,9 +690,10 @@ async function deployBot() {
       system_prompt: prompt,
       wallet_address: address,
       status: 'active'
-    })
-    .select('id')
-    .single();
+    }])
+    .select();
+
+  console.log('Insert result:', data, error);
 
   if (error) {
     statusDiv.className = 'status error';
