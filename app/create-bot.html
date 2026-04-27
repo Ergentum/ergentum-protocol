@@ -670,7 +670,7 @@ async function deployBot() {
   }
 
   // Save to Supabase
-  const supabase = window.supabase.createClient(
+  const supabase = (window.supabase || window.supabaseClient).createClient(
     'https://byafrpxwvrjcsqweohdf.supabase.co',
     'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJ5YWZycHh3dnJqY3Nxd2VvaGRmIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzcyOTkwNDAsImV4cCI6MjA5Mjg3NTA0MH0.OQDTtjbYLtw20dJ7wCAF3alhg0p2heUbpxVuTWJG13Y'
   );

@@ -564,7 +564,7 @@ a:hover { text-decoration: underline; }
 </div>
 
 <script>
-const supabase = window.supabase.createClient(
+const supabase = (window.supabase || window.supabaseClient).createClient(
   'https://byafrpxwvrjcsqweohdf.supabase.co',
   'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJ5YWZycHh3dnJqY3Nxd2VvaGRmIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzcyOTkwNDAsImV4cCI6MjA5Mjg3NTA0MH0.OQDTtjbYLtw20dJ7wCAF3alhg0p2heUbpxVuTWJG13Y'
 );
@@ -578,9 +578,11 @@ async function loadBots() {
       .select('*')
       .order('created_at', { ascending: true });
     if (error) throw error;
+    alert('Bots loaded: ' + JSON.stringify(data));
     BOTS = data || [];
   } catch (e) {
     console.error('Failed to load bots:', e);
+    alert('Error loading bots: ' + e.message);
     BOTS = [];
   }
   renderBots();
