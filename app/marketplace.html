@@ -566,40 +566,38 @@ a:hover { text-decoration: underline; }
 const SUPABASE_URL = 'https://byafrpxwvrjcsqweohdf.supabase.co';
 const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJ5YWZycHh3dnJqY3Nxd2VvaGRmIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzcyOTkwNDAsImV4cCI6MjA5Mjg3NTA0MH0.OQDTtjbYLtw20dJ7wCAF3alhg0p2heUbpxVuTWJG13Y';
 
-async function sbQuery(table, opts = {}) {
-  let url = `${SUPABASE_URL}/rest/v1/${table}?select=*`;
-  if (opts.filter) url += `&${opts.filter}=eq.${opts.value}`;
-  if (opts.order) url += `&order=${opts.order}`;
-  const resp = await fetch(url, {
-    headers: { 'apikey': SUPABASE_KEY, 'Authorization': 'Bearer ' + SUPABASE_KEY }
-  });
-  if (!resp.ok) throw new Error(`Supabase ${resp.status}: ${resp.statusText}`);
-  return resp.json();
-}
-
-async function sbCount(table) {
-  const resp = await fetch(`${SUPABASE_URL}/rest/v1/${table}?select=id`, {
-    headers: {
-      'apikey': SUPABASE_KEY,
-      'Authorization': 'Bearer ' + SUPABASE_KEY,
-      'Prefer': 'count=exact'
-    }
-  });
-  if (!resp.ok) throw new Error(`Supabase ${resp.status}`);
-  return resp.headers.get('content-range')?.split('/')[1] || '0';
-}
-
 let BOTS = [];
+let currentFilter = 'all';
+let currentBot = null;
 
 async function loadBots() {
   try {
-    const data = await sbQuery('bots', { order: 'created_at.asc' });
-    BOTS = data || [];
-  } catch (e) {
+    const resp = await fetch(
+      `${SUPABASE_URL}/rest/v1/bots?select=*&order=created_at.asc`,
+      { headers: {
+        'apikey': SUPABASE_KEY,
+        'Authorization': 'Bearer ' + SUPABASE_KEY
+      }}
+    );
+    BOTS = await resp.json();
+    console.log('Bots loaded:', BOTS);
+  } catch(e) {
     console.error('Failed to load bots:', e);
     BOTS = [];
   }
   renderBots();
+}
+
+function getCategoryIcon(category) {
+  const icons = {
+    'Technical': '💻',
+    'General': '🤖',
+    'Legal': '⚖️',
+    'Medical': '🏥',
+    'Financial': '💰',
+    'Education': '📚'
+  };
+  return icons[category] || '🤖';
 }
 
 function renderBots() {
@@ -609,88 +607,77 @@ function renderBots() {
 
   let filtered = BOTS.filter(b => {
     if (currentFilter !== 'all' && b.category !== currentFilter) return false;
-    if (query && !b.name.toLowerCase().includes(query) && !b.description.toLowerCase().includes(query)) return false;
+    if (query && !b.name.toLowerCase().includes(query) &&
+      !(b.description||'').toLowerCase().includes(query)) return false;
     return true;
   });
 
-  if (sort === 'price') filtered = [...filtered].sort((a, b) => Number(a.price) - Number(b.price));
-  else if (sort === 'newest') filtered = [...filtered].sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
+  if (sort === 'price') {
+    filtered.sort((a,b) => Number(a.price) - Number(b.price));
+  } else if (sort === 'newest') {
+    filtered.sort((a,b) => new Date(b.created_at) - new Date(a.created_at));
+  }
 
   if (filtered.length === 0) {
-    grid.innerHTML = '<div style="grid-column:1/-1;text-align:center;padding:60px 20px;color:#6a6b64;font-size:13px;">No bots found. Be the first to <a href="create-bot.html" style="color:#52c98a;">create one →</a></div>';
+    grid.innerHTML = `
+      <div style="grid-column:1/-1;text-align:center;
+      padding:60px 20px;color:#6a6b64;font-size:13px;">
+        No bots found. Be the first to
+        <a href="create-bot.html" style="color:#52c98a;">
+        create one →</a>
+      </div>`;
     return;
   }
 
   grid.innerHTML = filtered.map(b => `
     <div class="bot-card">
-      <div class="bot-icon">🤖</div>
+      <div class="bot-icon">${getCategoryIcon(b.category)}</div>
       <div class="bot-name">${b.name}</div>
       <div class="bot-badge">${b.category}</div>
-      <div class="bot-desc">${b.description}</div>
+      <div class="bot-desc">${b.description||''}</div>
       <div class="bot-meta">
         <span>💰 ${Number(b.price).toFixed(1)} tADA</span>
-        <span>⭐️ ${b.rating}</span>
-        <span>📊 ${b.uses || 0}</span>
+        <span>⭐️ ${b.rating||'5.0'}</span>
+        <span>📊 ${b.uses||0} uses</span>
       </div>
-      <button class="btn-use" onclick="openModal('${b.name}')">Use this bot →</button>
+      <button class="btn-use"
+        onclick="openModal('${b.id}')">
+        Use this bot →
+      </button>
     </div>
   `).join('');
 }
-    category: 'Technical',
-    icon: '💻',
-    desc: 'Cardano and AI development assistant. Smart contracts, Aiken, blockchain architecture.',
-    price: 0.5,
-    rating: '5.0',
-    uses: 'New',
-    tx: 'baa26469d6646c03eaa434e6ca281ccad3f5c70b5403b8d6fb96015f4d09e20c',
-    response: 'As an AI development assistant, I can help you with your Cardano/Aiken question.\n\n[Simulated response — full AI integration coming with mainnet]'
-  },
-  {
-    name: 'Ergentum Docs',
-    category: 'General',
-    icon: '📄',
-    desc: 'Document analysis and summarisation. Upload any document and get a clear structured summary.',
-    price: 0.3,
-    rating: '5.0',
-    uses: 'New',
-    tx: '948796fc39458dbac497bcb39e1830e75f994f7607c791891a0f35b1ee0d99a4',
-    response: "I've analysed your request. Here is a structured summary of the key points:\n\n[Simulated response — full AI integration coming with mainnet]"
-  },
-  {
-    name: 'Ergentum Assist',
-    category: 'General',
-    icon: '🤖',
-    desc: 'Personal assistant for scheduling, email drafting and daily task management.',
-    price: 0.2,
-    rating: '5.0',
-    uses: 'New',
-    tx: '5c82e74a3ce5b7dcf40a754f14bd29f0a7f5ee3f269db52304abc3eabf5a5008',
-    response: 'I understand your request. Here is how I can help you with this task:\n\n[Simulated response — full AI integration coming with mainnet]'
-  }
-];
 
-let currentFilter = 'all';
-let currentBot = null;
+function setFilter(cat) {
+  currentFilter = cat;
+  document.querySelectorAll('.filter-pill')
+    .forEach(p => p.classList.remove('active'));
+  document.querySelector(`[data-cat="${cat}"]`)
+    .classList.add('active');
+  renderBots();
+}
 
-// ── Modal ───────────────────────────────────────────
-function openModal(name) {
-  currentBot = BOTS.find(b => b.name === name);
+function filterBots() { renderBots(); }
+
+function openModal(botId) {
+  currentBot = BOTS.find(b => b.id === botId);
   if (!currentBot) return;
 
-  document.getElementById('modalIcon').textContent = '🤖';
-  document.getElementById('modalTitle').textContent = currentBot.name;
-  document.getElementById('modalDesc').textContent = currentBot.description;
-  document.getElementById('modalCost').textContent = `This will cost ${Number(currentBot.price).toFixed(1)} tADA`;
+  document.getElementById('modalIcon').textContent =
+    getCategoryIcon(currentBot.category);
+  document.getElementById('modalTitle').textContent =
+    currentBot.name;
+  document.getElementById('modalDesc').textContent =
+    currentBot.description||'';
+  document.getElementById('modalCost').textContent =
+    `This will cost ${Number(currentBot.price).toFixed(1)} tADA`;
 
   document.getElementById('modalForm').style.display = 'block';
-  document.getElementById('modalStatus').className = 'modal-status';
   document.getElementById('modalStatus').style.display = 'none';
-  document.getElementById('modalResponse').className = 'response-box';
   document.getElementById('modalResponse').style.display = 'none';
   document.getElementById('modalAddress').value = '';
   document.getElementById('modalMessage').value = '';
   document.getElementById('modalSendBtn').disabled = false;
-
   document.getElementById('modalOverlay').classList.add('open');
 }
 
@@ -705,11 +692,10 @@ async function sendRequest() {
   const status = document.getElementById('modalStatus');
   const form = document.getElementById('modalForm');
   const responseBox = document.getElementById('modalResponse');
-  const sendBtn = document.getElementById('modalSendBtn');
 
   if (!address.startsWith('addr_test1')) {
     status.className = 'modal-status error';
-    status.textContent = 'Invalid address. Must start with addr_test1 for testnet.';
+    status.textContent = 'Invalid address. Must start with addr_test1';
     status.style.display = 'block';
     return;
   }
@@ -722,39 +708,49 @@ async function sendRequest() {
 
   form.style.display = 'none';
   status.className = 'modal-status loading';
-  status.innerHTML = '<div class="spinner-sm"></div>Sending transaction...';
-  status.style.display = 'block';
+  status.innerHTML = '<div class="spinner-sm"></div>Processing...';
+  status.style.display = 'flex';
 
   await new Promise(r => setTimeout(r, 2000));
 
-  const hash = Array.from({length: 64}, () => '0123456789abcdef'[Math.floor(Math.random() * 16)]).join('');
+  const hash = Array.from({length:64}, () =>
+    '0123456789abcdef'[Math.floor(Math.random()*16)]).join('');
+
+  const botResponse = currentBot.system_prompt
+    ? `I'm ${currentBot.name}, your ${currentBot.category.toLowerCase()} assistant.
+
+You asked: "${msg}"
+
+[Simulated response — full AI integration coming with mainnet]`
+    : `[Simulated response — full AI integration coming with mainnet]`;
 
   responseBox.innerHTML = `
-    <strong>${currentBot.name} says:</strong>
+    <strong>${currentBot.name} says:</strong><br><br>
+    ${botResponse.replace(/\n/g,'<br>')}
     <br><br>
-    ${currentBot.response.replace(/\n/g, '<br>')}
+    <strong>TX:</strong>
+    <code style="font-size:11px;color:#6a6b64;
+    word-break:break-all;">${hash}</code>
     <br><br>
-    <strong>TX:</strong> <code style="font-size:11px;color:#6a6b64;word-break:break-all;">${hash}</code>
-    <a class="tx-link" href="https://preview.cardanoscan.io/transaction/${hash}" target="_blank">View on Cardanoscan →</a>
+    <small style="color:#4a4b44;">
+      Testnet simulation — real AI responses
+      coming with mainnet
+    </small>
   `;
-  responseBox.classList.add('open');
-
-  status.className = 'modal-status';
+  responseBox.style.display = 'block';
   status.style.display = 'none';
 }
 
-loadBots();
-
+// Banner
 function closeBanner() {
   document.getElementById('testnetBanner').classList.add('hidden');
-  localStorage.setItem('testnetBannerClosed', 'true');
+  localStorage.setItem('testnetBannerClosed','true');
+}
+if (localStorage.getItem('testnetBannerClosed')) {
+  document.getElementById('testnetBanner').classList.add('hidden');
 }
 
-(function() {
-  if (localStorage.getItem('testnetBannerClosed')) {
-    document.getElementById('testnetBanner').classList.add('hidden');
-  }
-})();
+loadBots();
 </script>
 
 </body>
