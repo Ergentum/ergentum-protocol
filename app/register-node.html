@@ -622,7 +622,7 @@ async function registerNode() {
       aiModel: modelLabel,
       apiProvider,
       walletAddress: address,
-      status: 'pending'
+      status: status
     });
   } catch (e) {
     statusDiv.className = 'status error';
