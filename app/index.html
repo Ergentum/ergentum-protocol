@@ -207,6 +207,19 @@ a:hover { text-decoration: underline; }
 .milestones .ms-footer { margin-top: 20px; text-align: center; }
 .milestones .ms-footer a { font-size: 13px; }
 
+/* Transactions table */
+.tx-section { margin-bottom: 40px; }
+.tx-section h2 { font-size: 14px; font-weight: 700; color: #e8e6df; margin-bottom: 16px; text-transform: uppercase; letter-spacing: 1px; }
+.tx-table { width: 100%; border-collapse: collapse; font-size: 11px; }
+.tx-table th { text-align: left; padding: 10px 12px; border-bottom: 1px solid #2a2b24; color: #6a6b64; text-transform: uppercase; letter-spacing: 1px; font-weight: 400; }
+.tx-table td { padding: 10px 12px; border-bottom: 1px solid #1e1f18; color: #9a9b94; }
+.tx-table tr:hover td { color: #e8e6df; }
+.tx-table .tx-amount { color: #52c98a; }
+.tx-table .tx-hash-link { color: #6a6b64; }
+.tx-table .tx-hash-link:hover { color: #52c98a; }
+.tx-empty { font-size: 12px; color: #6a6b64; padding: 24px 0; }
+.tx-empty a { color: #52c98a; }
+
 /* CTA */
 .cta-section {
   background: #1e3d2c;
@@ -314,7 +327,7 @@ a:hover { text-decoration: underline; }
       <div class="stat-lbl">Bots Active</div>
     </div>
     <div class="stat-card">
-      <div class="stat-val" id="statTx">—</div>
+      <div class="stat-val" id="statTransactions">—</div>
       <div class="stat-lbl">Transactions Confirmed</div>
     </div>
   </div>
@@ -418,6 +431,25 @@ a:hover { text-decoration: underline; }
     </div>
   </div>
 
+  <!-- Recent Transactions -->
+  <div class="tx-section">
+    <h2>Recent Transactions</h2>
+    <table class="tx-table" id="txTable">
+      <thead>
+        <tr>
+          <th>Type</th>
+          <th>Bot</th>
+          <th>Amount</th>
+          <th>TX Hash</th>
+          <th>Time</th>
+        </tr>
+      </thead>
+      <tbody id="txBody">
+        <tr><td colspan="5" class="tx-empty">Loading transactions...</td></tr>
+      </tbody>
+    </table>
+  </div>
+
   <!-- CTA -->
   <div class="cta-section">
     <div class="cta-title">Ready to participate?</div>
@@ -499,10 +531,79 @@ async function fetchStats() {
 
     document.getElementById('statNodes').textContent = nodeCount ?? '—';
     document.getElementById('statBots').textContent = botCount ?? '—';
-    document.getElementById('statTx').textContent = txCount ?? '—';
+    document.getElementById('statTransactions').textContent = txCount ?? '—';
   } catch (e) {
     console.error('Supabase error:', e);
   }
+
+  // Recent transactions
+  try {
+    const txResp = await fetch(
+      SUPABASE_URL + '/rest/v1/transactions?select=id,type,amount,tx_hash,created_at,bot_id&order=created_at.desc&limit=5',
+      {
+        headers: {
+          'apikey': SUPABASE_KEY,
+          'Authorization': 'Bearer ' + SUPABASE_KEY,
+          'Content-Type': 'application/json'
+        }
+      }
+    );
+    const txData = await txResp.json();
+    const tbody = document.getElementById('txBody');
+
+    if (!txData || txData.length === 0) {
+      tbody.innerHTML = '<tr><td colspan="5" class="tx-empty">No transactions yet. <a href="https://app.ergentum.com/marketplace.html">Use a bot in the marketplace →</a></td></tr>';
+    } else {
+      // Get bot names
+      const botIds = [...new Set(txData.map(t => t.bot_id).filter(Boolean))];
+      let botMap = {};
+      if (botIds.length > 0) {
+        const botResp = await fetch(
+          SUPABASE_URL + '/rest/v1/bots?select=id,name&id=in.(' + botIds.map(i => '"' + i + '"').join(',') + ')',
+          {
+            headers: {
+              'apikey': SUPABASE_KEY,
+              'Authorization': 'Bearer ' + SUPABASE_KEY
+            }
+          }
+        );
+        const botData = await botResp.json();
+        botData.forEach(b => { botMap[b.id] = b.name; });
+      }
+
+      tbody.innerHTML = txData.map(t => {
+        const type = 'Bot Use';
+        const botName = botMap[t.bot_id] || '—';
+        const amount = Number(t.amount).toFixed(1) + ' tADA';
+        const hash = t.tx_hash ? t.tx_hash.slice(0, 8) + '...' : '—';
+        const time = timeAgo(t.created_at);
+        return '<tr>' +
+          '<td>' + type + '</td>' +
+          '<td>' + botName + '</td>' +
+          '<td class="tx-amount">' + amount + '</td>' +
+          '<td><span class="tx-hash-link">' + hash + '</span></td>' +
+          '<td>' + time + '</td>' +
+        '</tr>';
+      }).join('');
+    }
+  } catch (e) {
+    console.error('Transactions error:', e);
+  }
+}
+
+function timeAgo(dateStr) {
+  if (!dateStr) return '';
+  const now = new Date();
+  const d = new Date(dateStr);
+  const diffMs = now - d;
+  const diffMin = Math.floor(diffMs / 60000);
+  if (diffMin < 1) return 'just now';
+  if (diffMin < 60) return diffMin + ' min ago';
+  const diffHrs = Math.floor(diffMin / 60);
+  if (diffHrs < 24) return diffHrs + ' hours ago';
+  const diffDays = Math.floor(diffHrs / 24);
+  if (diffDays === 1) return '1 day ago';
+  return diffDays + ' days ago';
 }
 
 fetchStats();
