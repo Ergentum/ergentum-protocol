@@ -286,7 +286,6 @@ a:hover { text-decoration: underline; }
     </div>
 
     <div class="note-box" id="modelExternalNote">
-      Requires API key. Additional cost ~€20-100/month<br><br>
       API key configuration is done locally when you set up your node software. You don't need to enter it here. See the setup guide after registration.
     </div>
     <div class="note-box" id="modelLocalNote">
@@ -296,6 +295,21 @@ a:hover { text-decoration: underline; }
     <div class="form-group">
       <label>Model name <span style="text-transform:none;letter-spacing:0;color:#6a6b64;">(optional)</span></label>
       <input type="text" id="modelName" placeholder="e.g. Qwen 14B, Mistral 7B, GPT-4o">
+    </div>
+
+    <div class="form-group" id="apiKeyGroup" style="display:none;">
+      <label>API key <span style="text-transform:none;letter-spacing:0;color:#6a6b64;">(optional for testnet)</span></label>
+      <div style="display:flex;gap:8px;">
+        <input type="text" id="apiKey" placeholder="sk-... or your provider API key" style="flex:1;">
+        <button class="btn btn-secondary skip-btn" onclick="skipApiKey()" style="flex:0 0 auto;padding:10px 14px;white-space:nowrap;font-size:11px;">Skip for now →</button>
+      </div>
+      <div style="font-size:11px;color:#6a6b64;margin-top:6px;line-height:1.6;">
+        Optional for now — required when your node goes live on mainnet.<br>
+        Don't have one? Get a free API key at:<br>
+        · <a href="https://console.anthropic.com" target="_blank">console.anthropic.com</a> (Claude)<br>
+        · <a href="https://platform.openai.com" target="_blank">platform.openai.com</a> (GPT)<br>
+        · <a href="https://console.groq.com" target="_blank">console.groq.com</a> (free &amp; fast)
+      </div>
     </div>
 
     <span class="toggle-link" id="ollamaToggle" onclick="toggleOllama()">Don't have a local model? Here's how → <span class="arrow">▼</span></span>
@@ -438,7 +452,13 @@ function onModelChange() {
   const val = document.getElementById('modelType').value;
   document.getElementById('modelExternalNote').style.display = val === 'external' || val === 'hybrid' ? 'block' : 'none';
   document.getElementById('modelLocalNote').style.display = val === 'local' ? 'block' : 'none';
+  document.getElementById('apiKeyGroup').style.display = val === 'external' || val === 'hybrid' ? 'block' : 'none';
   document.getElementById('step2Next').disabled = !val;
+}
+
+function skipApiKey() {
+  document.getElementById('apiKey').value = '';
+  goStep3();
 }
 
 function toggleOllama() {
