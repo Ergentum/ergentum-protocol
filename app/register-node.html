@@ -541,7 +541,31 @@ async function registerNode() {
   const infra = document.getElementById('infraType').value;
   const modelType = document.getElementById('modelType').value;
   const modelLabel = document.getElementById('modelType').options[document.getElementById('modelType').selectedIndex].text;
-  const apiProvider = document.getElementById('apiKey').value.trim() ? 'custom' : null;
+  const apiKey = document.getElementById('apiKey').value.trim();
+  const apiProvider = apiKey ? 'custom' : null;
+  let status = 'pending';
+
+  // Verify external API key with Groq
+  if (apiKey && (modelType === 'external' || modelType === 'hybrid')) {
+    statusDiv.innerHTML = '<div class="spinner"></div>Verifying your API key with Groq...';
+    try {
+      const resp = await fetch('https://api.groq.com/openai/v1/models', {
+        headers: { 'Authorization': 'Bearer ' + apiKey }
+      });
+      if (resp.ok) {
+        status = 'active';
+        statusDiv.innerHTML = '<div class="spinner"></div>API key valid. Registering your node...';
+      } else {
+        status = 'pending';
+        statusDiv.innerHTML = '<div class="spinner"></div>API key invalid. Registered as pending.<br><small style="color:#9a9b94;">You can update your key later in node settings.</small>';
+        await new Promise(r => setTimeout(r, 1200));
+      }
+    } catch (e) {
+      status = 'pending';
+      statusDiv.innerHTML = '<div class="spinner"></div>Could not verify API key. Registered as pending.<br><small style="color:#9a9b94;">Check your key and try again later.</small>';
+      await new Promise(r => setTimeout(r, 1200));
+    }
+  }
 
   // Save to Supabase
   const supabase = window.supabase.createClient(
@@ -558,7 +582,7 @@ async function registerNode() {
       ai_model: modelLabel,
       api_provider: apiProvider,
       wallet_address: address,
-      status: 'pending'
+      status: status
     })
     .select('id')
     .single();
