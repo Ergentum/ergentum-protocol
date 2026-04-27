@@ -403,7 +403,7 @@ a:hover { text-decoration: underline; }
 const SUPABASE_URL = 'https://byafrpxwvrjcsqweohdf.supabase.co';
 const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJ5YWZycHh3dnJqY3Nxd2VvaGRmIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzcyOTkwNDAsImV4cCI6MjA5Mjg3NTA0MH0.OQDTtjbYLtw20dJ7wCAF3alhg0p2heUbpxVuTWJG13Y';
 
-async function registerNode(nodeData) {
+async function insertNodeToSupabase(nodeData) {
   console.log('Attempting to insert node:', nodeData);
 
   const resp = await fetch(
@@ -607,7 +607,7 @@ async function registerNode() {
 
   // Save to Supabase
   try {
-    await registerNode({
+    await insertNodeToSupabase({
       name,
       tier,
       infrastructure: infra,
