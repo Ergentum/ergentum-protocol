@@ -4,6 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Marketplace — Ergentum</title>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
 <style>
 * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -563,9 +564,62 @@ a:hover { text-decoration: underline; }
 </div>
 
 <script>
-const BOTS = [
-  {
-    name: 'Ergentum Dev',
+const supabase = window.supabase.createClient(
+  'https://byafrpxwvrjcsqweohdf.supabase.co',
+  'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJ5YWZycHh3dnJqY3Nxd2VvaGRmIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzcyOTkwNDAsImV4cCI6MjA5Mjg3NTA0MH0.OQDTtjbYLtw20dJ7wCAF3alhg0p2heUbpxVuTWJG13Y'
+);
+
+let BOTS = [];
+
+async function loadBots() {
+  try {
+    const { data, error } = await supabase
+      .from('bots')
+      .select('*')
+      .order('created_at', { ascending: false });
+    if (error) throw error;
+    BOTS = data || [];
+  } catch (e) {
+    console.error('Failed to load bots:', e);
+    BOTS = [];
+  }
+  renderBots();
+}
+
+function renderBots() {
+  const grid = document.getElementById('botGrid');
+  const query = document.getElementById('searchInput').value.toLowerCase();
+  const sort = document.getElementById('sortSelect').value;
+
+  let filtered = BOTS.filter(b => {
+    if (currentFilter !== 'all' && b.category !== currentFilter) return false;
+    if (query && !b.name.toLowerCase().includes(query) && !b.description.toLowerCase().includes(query)) return false;
+    return true;
+  });
+
+  if (sort === 'price') filtered = [...filtered].sort((a, b) => Number(a.price) - Number(b.price));
+  else if (sort === 'newest') filtered = [...filtered].sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
+
+  if (filtered.length === 0) {
+    grid.innerHTML = '<div style="grid-column:1/-1;text-align:center;padding:60px 20px;color:#6a6b64;font-size:13px;">No bots found. Be the first to <a href="create-bot.html" style="color:#52c98a;">create one →</a></div>';
+    return;
+  }
+
+  grid.innerHTML = filtered.map(b => `
+    <div class="bot-card">
+      <div class="bot-icon">🤖</div>
+      <div class="bot-name">${b.name}</div>
+      <div class="bot-badge">${b.category}</div>
+      <div class="bot-desc">${b.description}</div>
+      <div class="bot-meta">
+        <span>💰 ${Number(b.price).toFixed(1)} tADA</span>
+        <span>⭐️ ${b.rating}</span>
+        <span>📊 ${b.uses || 0}</span>
+      </div>
+      <button class="btn-use" onclick="openModal('${b.name}')">Use this bot →</button>
+    </div>
+  `).join('');
+}
     category: 'Technical',
     icon: '💻',
     desc: 'Cardano and AI development assistant. Smart contracts, Aiken, blockchain architecture.',
@@ -602,56 +656,15 @@ const BOTS = [
 let currentFilter = 'all';
 let currentBot = null;
 
-function renderBots() {
-  const grid = document.getElementById('botGrid');
-  const query = document.getElementById('searchInput').value.toLowerCase();
-  const sort = document.getElementById('sortSelect').value;
-
-  let filtered = BOTS.filter(b => {
-    if (currentFilter !== 'all' && b.category !== currentFilter) return false;
-    if (query && !b.name.toLowerCase().includes(query) && !b.desc.toLowerCase().includes(query)) return false;
-    return true;
-  });
-
-  if (sort === 'price') filtered = [...filtered].sort((a, b) => a.price - b.price);
-  else if (sort === 'newest') filtered = [...filtered].sort((a, b) => b.name.localeCompare(a.name));
-
-  grid.innerHTML = filtered.map(b => `
-    <div class="bot-card">
-      <div class="bot-icon">${b.icon}</div>
-      <div class="bot-name">${b.name}</div>
-      <div class="bot-badge">${b.category}</div>
-      <div class="bot-desc">${b.desc}</div>
-      <div class="bot-meta">
-        <span>💰 ${b.price} tADA</span>
-        <span>⭐️ ${b.rating}</span>
-        <span>📊 ${b.uses}</span>
-        <span class="tx-hash" title="${b.tx}">#${b.tx.slice(0, 12)}…</span>
-      </div>
-      <button class="btn-use" onclick="openModal('${b.name}')">Use this bot →</button>
-    </div>
-  `).join('');
-}
-
-function setFilter(cat) {
-  currentFilter = cat;
-  document.querySelectorAll('.filter-pill').forEach(p => p.classList.toggle('active', p.dataset.cat === cat));
-  renderBots();
-}
-
-function filterBots() {
-  renderBots();
-}
-
 // ── Modal ───────────────────────────────────────────
 function openModal(name) {
   currentBot = BOTS.find(b => b.name === name);
   if (!currentBot) return;
 
-  document.getElementById('modalIcon').textContent = currentBot.icon;
+  document.getElementById('modalIcon').textContent = '🤖';
   document.getElementById('modalTitle').textContent = currentBot.name;
-  document.getElementById('modalDesc').textContent = currentBot.desc;
-  document.getElementById('modalCost').textContent = `This will cost ${currentBot.price} tADA`;
+  document.getElementById('modalDesc').textContent = currentBot.description;
+  document.getElementById('modalCost').textContent = `This will cost ${Number(currentBot.price).toFixed(1)} tADA`;
 
   document.getElementById('modalForm').style.display = 'block';
   document.getElementById('modalStatus').className = 'modal-status';
@@ -714,7 +727,7 @@ async function sendRequest() {
   status.style.display = 'none';
 }
 
-renderBots();
+loadBots();
 
 function closeBanner() {
   document.getElementById('testnetBanner').classList.add('hidden');

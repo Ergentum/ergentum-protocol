@@ -4,6 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Dashboard — Ergentum</title>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
 <style>
 * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -87,7 +88,7 @@ a:hover { text-decoration: underline; }
 /* Stats grid */
 .stats-grid {
   display: grid;
-  grid-template-columns: repeat(4, 1fr);
+  grid-template-columns: repeat(5, 1fr);
   gap: 16px;
   margin-bottom: 60px;
 }
@@ -305,11 +306,15 @@ a:hover { text-decoration: underline; }
       <div class="stat-lbl">Block Height</div>
     </div>
     <div class="stat-card">
-      <div class="stat-val" id="statErgon">12,500,000</div>
-      <div class="stat-lbl">ERGON in Circulation</div>
+      <div class="stat-val" id="statNodes">—</div>
+      <div class="stat-lbl">Nodes Active</div>
     </div>
     <div class="stat-card">
-      <div class="stat-val" id="statTx">8</div>
+      <div class="stat-val" id="statBots">—</div>
+      <div class="stat-lbl">Bots Active</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-val" id="statTx">—</div>
       <div class="stat-lbl">Transactions Confirmed</div>
     </div>
   </div>
@@ -450,6 +455,11 @@ function fmt(n) {
   return n.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',');
 }
 
+const supabase = window.supabase.createClient(
+  'https://byafrpxwvrjcsqweohdf.supabase.co',
+  'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJ5YWZycHh3dnJqY3Nxd2VvaGRmIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzcyOTkwNDAsImV4cCI6MjA5Mjg3NTA0MH0.OQDTtjbYLtw20dJ7wCAF3alhg0p2heUbpxVuTWJG13Y'
+);
+
 async function fetchStats() {
   const slotEl = document.getElementById('statSlot');
   const blockEl = document.getElementById('statBlock');
@@ -469,6 +479,25 @@ async function fetchStats() {
     blockEl.textContent = FALLBACK_BLOCK;
     slotEl.classList.remove('loading');
     blockEl.classList.remove('loading');
+  }
+
+  // Supabase stats
+  try {
+    const { count: nodeCount } = await supabase
+      .from('nodes')
+      .select('id', { count: 'exact', head: true });
+    const { count: botCount } = await supabase
+      .from('bots')
+      .select('id', { count: 'exact', head: true });
+    const { count: txCount } = await supabase
+      .from('transactions')
+      .select('id', { count: 'exact', head: true });
+
+    document.getElementById('statNodes').textContent = nodeCount ?? '—';
+    document.getElementById('statBots').textContent = botCount ?? '—';
+    document.getElementById('statTx').textContent = txCount ?? '—';
+  } catch (e) {
+    console.error('Supabase error:', e);
   }
 }
 

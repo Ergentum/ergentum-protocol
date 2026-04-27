@@ -4,6 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Create a Bot — Ergentum</title>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
 <style>
 * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -668,13 +669,38 @@ async function deployBot() {
     return;
   }
 
-  // Simulated deployment
+  // Save to Supabase
+  const supabase = window.supabase.createClient(
+    'https://byafrpxwvrjcsqweohdf.supabase.co',
+    'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJ5YWZycHh3dnJqY3Nxd2VvaGRmIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzcyOTkwNDAsImV4cCI6MjA5Mjg3NTA0MH0.OQDTtjbYLtw20dJ7wCAF3alhg0p2heUbpxVuTWJG13Y'
+  );
+
   statusDiv.className = 'status loading';
-  statusDiv.innerHTML = '<div class="spinner"></div>Connecting to testnet...';
+  statusDiv.innerHTML = '<div class="spinner"></div>Registering your bot to the network...';
   statusDiv.style.display = 'block';
   deployBtn.disabled = true;
 
-  await new Promise(r => setTimeout(r, 2000));
+  const { data, error } = await supabase
+    .from('bots')
+    .insert({
+      name,
+      category: cat,
+      description: desc,
+      price: price,
+      system_prompt: prompt,
+      wallet_address: address,
+      status: 'active'
+    })
+    .select('id')
+    .single();
+
+  if (error) {
+    statusDiv.className = 'status error';
+    statusDiv.innerHTML = `Deploy failed: ${error.message}`;
+    statusDiv.style.display = 'block';
+    deployBtn.disabled = false;
+    return;
+  }
 
   const hash = Array.from({length: 64}, () => '0123456789abcdef'[Math.floor(Math.random() * 16)]).join('');
 
