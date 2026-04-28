@@ -31,6 +31,50 @@ a:hover { text-decoration: underline; }
 .logo { font-size: 18px; font-weight: 700; color: #52c98a; }
 .logo span { color: #e8e6df; font-weight: 400; }
 .nav-links { font-size: 13px; display: flex; gap: 20px; }
+.nav-links a { color: #52c98a; text-decoration: none; white-space: nowrap; }
+.nav-links a:hover { text-decoration: underline; }
+
+/* Testnet context */
+.testnet-context {
+  width: 100%;
+  max-width: 1100px;
+  padding: 12px 20px;
+  margin: 16px auto 0;
+  background: rgba(82,201,138,0.06);
+  border: 1px solid rgba(82,201,138,0.2);
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  font-size: 12px;
+  color: #9a9b94;
+  line-height: 1.5;
+}
+.context-badge {
+  font-size: 11px;
+  letter-spacing: 0.1em;
+  color: #52c98a;
+  white-space: nowrap;
+  font-weight: 700;
+}
+.testnet-context a {
+  color: #52c98a;
+}
+.page-context {
+  background: rgba(82,201,138,0.04);
+  border-left: 3px solid #52c98a;
+  padding: 12px 16px;
+  margin: 16px 0 24px;
+  font-size: 12px;
+  color: #9a9b94;
+  line-height: 1.6;
+  border-radius: 0 6px 6px 0;
+}
+.page-context strong {
+  color: #e8e6df;
+  display: block;
+  margin-bottom: 4px;
+}
 
 /* Container */
 .container { width: 100%; max-width: 600px; padding: 40px 20px 60px; }
@@ -220,6 +264,11 @@ a:hover { text-decoration: underline; }
   </div>
 </header>
 
+<div class="testnet-context">
+  <span class="context-badge">🧪 Testnet Preview</span>
+  <p>You are testing the Ergentum protocol. This is a preview of what the real network will look like. Nodes, bots and transactions are real in structure — AI responses and token values are simulated. <a href="https://ergentum.com/docs" target="_blank">Learn what's coming →</a></p>
+</div>
+
 <div class="container">
 
   <a class="back-link" href="https://app.ergentum.com">← Back to Dashboard</a>
@@ -387,6 +436,11 @@ a:hover { text-decoration: underline; }
       <div class="summary-row"><span class="label">Reward multiplier</span><span class="value" id="summaryMultiplier">—</span></div>
       <div class="summary-row"><span class="label">Est. monthly earnings</span><span class="value" id="summaryEarnings">—</span></div>
       <div class="summary-row"><span class="label">AI Model</span><span class="value" id="summaryModel">—</span></div>
+    </div>
+
+    <div class="page-context">
+      <strong>Your node registration is real.</strong>
+      On mainnet, your node will process AI tasks from users and earn ERGON for every task. The tier system, multipliers and earning model you see here reflect the real mainnet.
     </div>
 
     <div class="buttons">

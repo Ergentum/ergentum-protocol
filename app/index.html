@@ -140,20 +140,6 @@ a:hover { text-decoration: underline; }
 }
 .banner-close:hover { color: #e8e6df; }
 .banner-icon { font-size: 28px; line-height: 1; flex-shrink: 0; padding-top: 2px; }
-.banner-title { font-size: 15px; font-weight: 700; color: #e8e6df; margin-bottom: 8px; }
-.banner-text { font-size: 12px; color: #9a9b94; line-height: 1.6; }
-.banner-text a { color: #c9a84c; }
-.faucet-btn {
-  display: inline-block;
-  padding: 10px 22px;
-  background: #c9a84c;
-  color: #13140f;
-  border-radius: 6px;
-  font-weight: 700;
-  font-size: 13px;
-  transition: background 0.2s;
-}
-.faucet-btn:hover { background: #dbb85e; text-decoration: none; }
 
 /* Section titles */
 .section-title {
@@ -248,6 +234,33 @@ a:hover { text-decoration: underline; }
 .cta-section .btn-secondary { background: transparent; color: #52c98a; border: 1px solid #52c98a; }
 .cta-section .btn-secondary:hover { background: #52c98a; color: #13140f; }
 
+/* Testnet context */
+.testnet-context {
+  width: 100%;
+  max-width: 1100px;
+  padding: 12px 20px;
+  margin: 16px auto 0;
+  background: rgba(82,201,138,0.06);
+  border: 1px solid rgba(82,201,138,0.2);
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  font-size: 12px;
+  color: #9a9b94;
+  line-height: 1.5;
+}
+.context-badge {
+  font-size: 11px;
+  letter-spacing: 0.1em;
+  color: #52c98a;
+  white-space: nowrap;
+  font-weight: 700;
+}
+.testnet-context a {
+  color: #52c98a;
+}
+
 /* Footer */
 .footer {
   width: 100%;
@@ -295,6 +308,11 @@ a:hover { text-decoration: underline; }
   </div>
 </header>
 
+<div class="testnet-context">
+  <span class="context-badge">🧪 Testnet Preview</span>
+  <p>You are testing the Ergentum protocol. This is a preview of what the real network will look like. Nodes, bots and transactions are real in structure — AI responses and token values are simulated. <a href="https://ergentum.com/docs" target="_blank">Learn what's coming →</a></p>
+</div>
+
 <div class="container">
 
   <!-- Hero -->
@@ -332,35 +350,6 @@ a:hover { text-decoration: underline; }
       <div class="stat-lbl">Transactions Confirmed</div>
     </div>
   </div>
-
-  <!-- Testnet ADA Banner -->
-  <div class="testnet-banner" id="testnetBanner">
-    <button class="banner-close" onclick="closeBanner()">✕</button>
-    <div class="banner-icon">⚡️</div>
-    <div class="banner-content">
-      <div class="banner-title">You're on Testnet &mdash; Everything is free to try</div>
-      <div class="banner-text">
-        To interact with the network you need testnet ADA (tADA). It's completely free &mdash; no real money involved.
-        <br><br>
-        <strong>Here's how to get it in 2 minutes:</strong>
-        <br><br>
-        1. Create a Cardano testnet wallet<br>
-        &nbsp;&nbsp;→ <a href="https://eternl.io" target="_blank">eternl.io</a> or <a href="https://lace.io" target="_blank">lace.io</a> (free browser extension)<br>
-        &nbsp;&nbsp;→ Switch to Preview Testnet in settings<br>
-        &nbsp;&nbsp;→ Copy your wallet address (<code style="font-size:11px;background:#13140f;padding:1px 4px;border-radius:2px;">addr_test1</code>...)
-        <br><br>
-        2. Request free tADA from the faucet<br>
-        &nbsp;&nbsp;→ Click the button below<br>
-        &nbsp;&nbsp;→ Paste your wallet address<br>
-        &nbsp;&nbsp;→ Click Request &mdash; funds arrive in 1-2 minutes
-        <br><br>
-        3. Come back and start exploring!
-        <br><br>
-        <a class="faucet-btn" href="https://docs.cardano.org/cardano-testnet/tools/faucet" target="_blank">Get free tADA →</a>
-        <br><br>
-        <span style="font-size:11px;color:#6a6b64;">tADA has no real value. It's only for testing on Preview Testnet.</span>
-      </div>
-    </div>
   </div>
 
   <!-- How it works -->
@@ -609,52 +598,7 @@ function timeAgo(dateStr) {
 
 fetchStats();
 setInterval(fetchStats, 60000);
-
-function closeBanner() {
-  document.getElementById('testnetBanner').classList.add('hidden');
-  localStorage.setItem('testnetBannerClosed', 'true');
-}
-
-(function() {
-  if (localStorage.getItem('testnetBannerClosed')) {
-    document.getElementById('testnetBanner').classList.add('hidden');
-  }
-})();
 </script>
 
 </body>
 </html>
-
-  </div>
-
-  <!-- Testnet ADA Banner -->
-  <div class="testnet-banner" id="testnetBanner">
-    <button class="banner-close" onclick="closeBanner()">✕</button>
-    <div class="banner-icon">⚡️</div>
-    <div class="banner-content">
-      <div class="banner-title">You're on Testnet — Everything is free to try</div>
-      <div class="banner-text">
-        To interact with the network you need testnet ADA (tADA). It's completely free — no real money involved.
-        <br><br>
-        <strong>Here's how to get it in 2 minutes:</strong>
-        <br><br>
-        1. Create a Cardano testnet wallet<br>
-        &nbsp;&nbsp;→ <a href="https://eternl.io" target="_blank">eternl.io</a> or <a href="https://lace.io" target="_blank">lace.io</a> (free browser extension)<br>
-        &nbsp;&nbsp;→ Switch to Preview Testnet in settings<br>
-        &nbsp;&nbsp;→ Copy your wallet address (addr_test1...)
-        <br><br>
-        2. Request free tADA from the faucet<br>
-        &nbsp;&nbsp;→ Click the button below<br>
-        &nbsp;&nbsp;→ Paste your wallet address<br>
-        &nbsp;&nbsp;→ Click Request — funds arrive in 1-2 minutes
-        <br><br>
-        3. Come back and start exploring!
-        <br><br>
-        <a class="faucet-btn" href="https://docs.cardano.org/cardano-testnet/tools/faucet" target="_blank">Get free tADA →</a>
-        <br><br>
-        <span style="font-size:11px;color:#6a6b64;">tADA has no real value. It's only for testing on Preview Testnet.</span>
-      </div>
-    </div>
-  </div>
-
-  <!-- How it works -->
