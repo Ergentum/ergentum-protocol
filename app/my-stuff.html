@@ -602,8 +602,40 @@ function closeConfirm() {
   document.getElementById('confirmOverlay').classList.remove('open');
 }
 
+async function deleteNode(nodeId) {
+  const resp = await fetch(
+    SUPABASE_URL + '/rest/v1/nodes?id=eq.' + encodeURIComponent(nodeId),
+    {
+      method: 'DELETE',
+      headers: {
+        'apikey': SUPABASE_KEY,
+        'Authorization': 'Bearer ' + SUPABASE_KEY,
+        'Content-Type': 'application/json'
+      }
+    }
+  );
+  console.log('Delete node status:', resp.status);
+  return resp.ok;
+}
+
+async function deleteBot(botId) {
+  const resp = await fetch(
+    SUPABASE_URL + '/rest/v1/bots?id=eq.' + encodeURIComponent(botId),
+    {
+      method: 'DELETE',
+      headers: {
+        'apikey': SUPABASE_KEY,
+        'Authorization': 'Bearer ' + SUPABASE_KEY,
+        'Content-Type': 'application/json'
+      }
+    }
+  );
+  console.log('Delete bot status:', resp.status);
+  return resp.ok;
+}
+
 async function executeDelete() {
-  const { type, table, id } = CONFIRM_ACTION;
+  const { type, id } = CONFIRM_ACTION;
   if (!id) return;
 
   const overlay = document.getElementById('confirmOverlay');
@@ -612,27 +644,23 @@ async function executeDelete() {
   btn.textContent = 'Deleting...';
 
   try {
-    const resp = await fetch(
-      SUPABASE_URL + '/rest/v1/' + table + '?id=eq.' + encodeURIComponent(id),
-      {
-        method: 'DELETE',
-        headers: {
-          'apikey': SUPABASE_KEY,
-          'Authorization': 'Bearer ' + SUPABASE_KEY,
-          'Content-Type': 'application/json'
-        }
-      }
-    );
+    let ok = false;
+    if (type === 'node') {
+      ok = await deleteNode(id);
+    } else if (type === 'bot') {
+      ok = await deleteBot(id);
+    }
 
-    if (!resp.ok) {
-      throw new Error('Delete failed: ' + resp.status);
+    if (!ok) {
+      const statusText = ok === false ? ' (check console for status)' : '';
+      throw new Error('Delete failed' + statusText);
     }
 
     // Remove card from DOM
     const card = document.querySelector('.item-card[data-id="' + id + '"]');
     if (card) card.remove();
 
-    // Reload if empty
+    // Reload to reflect changes
     loadMyStuff();
 
     overlay.classList.remove('open');
