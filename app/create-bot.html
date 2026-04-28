@@ -22,15 +22,32 @@ a:hover { text-decoration: underline; }
 /* Header */
 .header {
   width: 100%;
-  max-width: 720px;
+  max-width: 1100px;
   padding: 32px 20px 0;
   display: flex;
   justify-content: space-between;
   align-items: center;
 }
-.logo { font-size: 18px; font-weight: 700; color: #52c98a; }
-.logo span { color: #e8e6df; font-weight: 400; }
-.nav-links { font-size: 13px; display: flex; gap: 20px; }
+.logo {
+  font-size: 18px;
+  font-weight: 700;
+  color: #52c98a;
+  text-decoration: none;
+}
+.nav-links {
+  font-size: 13px;
+  display: flex;
+  gap: 20px;
+  flex-wrap: nowrap;
+}
+.nav-links a {
+  color: #52c98a;
+  text-decoration: none;
+  white-space: nowrap;
+}
+.nav-links a:hover {
+  text-decoration: underline;
+}
 
 /* Container */
 .container {
@@ -284,7 +301,7 @@ input.error, select.error, textarea.error { border-color: #ef4444; }
 
 /* Responsive */
 @media (max-width: 520px) {
-  .header { flex-direction: column; gap: 12px; align-items: flex-start; }
+  .header { flex-direction: column; align-items: flex-start; gap: 12px; }
   .nav-links { flex-wrap: wrap; }
   .buttons { flex-direction: column; }
   .btn { width: 100%; text-align: center; }
@@ -301,7 +318,7 @@ input.error, select.error, textarea.error { border-color: #ef4444; }
     <a href="https://app.ergentum.com">Dashboard</a>
     <a href="https://app.ergentum.com/marketplace.html">Marketplace</a>
     <a href="https://app.ergentum.com/nodes.html">Nodes</a>
-    <a href="https://app.ergentum.com/create-bot.html">Create a bot →</a>
+    <a href="https://app.ergentum.com/create-bot.html">Create a bot</a>
     <a href="https://app.ergentum.com/register-node.html">Register a node →</a>
     <a href="https://app.ergentum.com/my-stuff.html">My stuff</a>
     <a href="https://ergentum.com/network">Network</a>
