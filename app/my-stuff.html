@@ -1,0 +1,654 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>My Stuff — Ergentum</title>
+<link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body {
+  background: #13140f;
+  color: #e8e6df;
+  font-family: 'Space Mono', monospace;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+a { color: #52c98a; text-decoration: none; }
+a:hover { text-decoration: underline; }
+
+/* Header */
+.header {
+  width: 100%;
+  max-width: 1100px;
+  padding: 32px 20px 0;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+.logo { font-size: 18px; font-weight: 700; color: #52c98a; }
+.logo span { color: #e8e6df; font-weight: 400; }
+.nav {
+  display: flex;
+  gap: 20px;
+  align-items: center;
+}
+.nav a { font-size: 13px; }
+.nav .btn-nav {
+  padding: 8px 16px;
+  background: #52c98a;
+  color: #13140f;
+  border-radius: 6px;
+  font-weight: 700;
+  font-size: 13px;
+  transition: background 0.2s;
+}
+.nav .btn-nav:hover { background: #6adb9c; text-decoration: none; }
+
+/* Container */
+.container { width: 100%; max-width: 1100px; padding: 24px 20px 60px; }
+
+/* Page title */
+.page-title { font-size: 22px; font-weight: 700; margin-bottom: 6px; }
+.page-sub { font-size: 13px; color: #6a6b64; margin-bottom: 28px; }
+
+/* Wallet input */
+.wallet-box {
+  background: #1a1b16;
+  border: 1px solid #2a2b24;
+  border-radius: 10px;
+  padding: 24px;
+  margin-bottom: 32px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+.wallet-box label {
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  color: #9a9b94;
+}
+.wallet-row {
+  display: flex;
+  gap: 10px;
+  align-items: stretch;
+}
+.wallet-row input {
+  flex: 1;
+  padding: 12px 14px;
+  background: #1e1f18;
+  border: 1px solid #2a2b24;
+  border-radius: 6px;
+  color: #e8e6df;
+  font-family: 'Space Mono', monospace;
+  font-size: 13px;
+  outline: none;
+  transition: border-color 0.2s;
+}
+.wallet-row input:focus { border-color: #52c98a; }
+.wallet-row input::placeholder { color: #3a3b34; }
+.wallet-row .btn-load {
+  padding: 12px 28px;
+  background: #52c98a;
+  color: #13140f;
+  border: none;
+  border-radius: 6px;
+  font-family: 'Space Mono', monospace;
+  font-size: 13px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: background 0.2s;
+  white-space: nowrap;
+}
+.wallet-row .btn-load:hover { background: #6adb9c; }
+.wallet-row .btn-load:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+.wallet-security {
+  font-size: 11px;
+  color: #6a6b64;
+  line-height: 1.5;
+  padding: 10px 14px;
+  background: rgba(82,201,138,0.05);
+  border-left: 2px solid #52c98a44;
+  border-radius: 4px;
+}
+
+/* Section title */
+.section-title {
+  font-size: 16px;
+  font-weight: 700;
+  margin-bottom: 16px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.section-title .count {
+  font-size: 12px;
+  color: #6a6b64;
+  font-weight: 400;
+}
+
+/* Item grid */
+.item-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 16px;
+  margin-bottom: 40px;
+}
+.item-card {
+  background: #1a1b16;
+  border: 1px solid #2a2b24;
+  border-radius: 10px;
+  padding: 18px;
+  display: flex;
+  flex-direction: column;
+  transition: border-color 0.25s;
+}
+.item-card:hover { border-color: #3a4b3e; }
+.item-card .item-name {
+  font-size: 15px;
+  font-weight: 700;
+  margin-bottom: 4px;
+}
+.item-card .item-badge {
+  display: inline-block;
+  padding: 2px 8px;
+  border-radius: 4px;
+  font-size: 10px;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  margin-bottom: 8px;
+  width: fit-content;
+}
+.item-card .item-badge.tier-light { background: #52c98a22; border: 1px solid #52c98a44; color: #52c98a; }
+.item-card .item-badge.tier-standard { background: #4c9ac922; border: 1px solid #4c9ac944; color: #4c9ac9; }
+.item-card .item-badge.tier-professional { background: #c94c9a22; border: 1px solid #c94c9a44; color: #c94c9a; }
+.item-card .item-badge.tier-sovereign { background: #c9a84c22; border: 1px solid #c9a84c44; color: #c9a84c; }
+.item-card .item-badge.bot-badge { background: #52c98a22; border: 1px solid #52c98a44; color: #52c98a; }
+.item-card .item-detail {
+  font-size: 11px;
+  color: #9a9b94;
+  line-height: 1.7;
+  flex: 1;
+  margin-bottom: 12px;
+}
+.item-card .item-detail span { display: block; }
+.item-card .item-detail .label { color: #6a6b64; }
+.item-card .item-status {
+  font-size: 10px;
+  letter-spacing: 1px;
+  margin-bottom: 12px;
+}
+.item-card .item-status.active { color: #52c98a; }
+.item-card .item-status.pending { color: #c9a84c; }
+.item-card .item-status.inactive { color: #9a4c4c; }
+.item-card .item-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 10px;
+  color: #6a6b64;
+  border-top: 1px solid #1e1f18;
+  padding-top: 10px;
+}
+.item-card .btn-delete {
+  padding: 6px 14px;
+  background: transparent;
+  border: 1px solid #8c3a3a;
+  border-radius: 4px;
+  color: #c94c4c;
+  font-family: 'Space Mono', monospace;
+  font-size: 10px;
+  cursor: pointer;
+  transition: all 0.2s;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+.item-card .btn-delete:hover {
+  background: #8c3a3a;
+  color: #e8e6df;
+}
+
+/* Empty state */
+.empty-state {
+  text-align: center;
+  padding: 48px 20px;
+  border: 1px dashed #2a2b24;
+  border-radius: 10px;
+  margin-bottom: 40px;
+}
+.empty-state p { font-size: 13px; color: #6a6b64; margin-bottom: 16px; line-height: 1.6; }
+.empty-state .empty-links { display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; }
+.empty-state .empty-links a { font-size: 13px; }
+
+/* Loading / Error */
+.loading-msg {
+  font-size: 12px;
+  color: #6a6b64;
+  padding: 24px 0;
+  text-align: center;
+}
+.error-msg {
+  font-size: 12px;
+  color: #c94c4c;
+  padding: 12px 14px;
+  background: rgba(201,76,76,0.08);
+  border-left: 2px solid #c94c4c;
+  border-radius: 4px;
+  margin-bottom: 16px;
+}
+
+/* Confirm dialog */
+.confirm-overlay {
+  display: none;
+  position: fixed;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background: rgba(0,0,0,0.7);
+  align-items: center;
+  justify-content: center;
+  z-index: 100;
+}
+.confirm-overlay.open { display: flex; }
+.confirm-box {
+  background: #1a1b16;
+  border: 1px solid #2a2b24;
+  border-radius: 12px;
+  padding: 32px;
+  max-width: 420px;
+  width: 90%;
+  text-align: center;
+}
+.confirm-box .confirm-title {
+  font-size: 16px;
+  font-weight: 700;
+  margin-bottom: 12px;
+}
+.confirm-box .confirm-text {
+  font-size: 12px;
+  color: #9a9b94;
+  line-height: 1.6;
+  margin-bottom: 24px;
+}
+.confirm-box .confirm-buttons {
+  display: flex;
+  gap: 10px;
+  justify-content: center;
+}
+.confirm-box .btn-confirm {
+  padding: 10px 24px;
+  border: none;
+  border-radius: 6px;
+  font-family: 'Space Mono', monospace;
+  font-size: 12px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+.confirm-box .btn-danger {
+  background: #8c3a3a;
+  color: #e8e6df;
+}
+.confirm-box .btn-danger:hover { background: #a94444; }
+.confirm-box .btn-cancel {
+  background: transparent;
+  border: 1px solid #2a2b24;
+  color: #9a9b94;
+}
+.confirm-box .btn-cancel:hover { border-color: #52c98a; color: #52c98a; }
+
+/* Footer */
+.footer {
+  width: 100%;
+  max-width: 1100px;
+  padding: 24px 20px 40px;
+  border-top: 1px solid #2a2b24;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 12px;
+  font-size: 11px;
+  color: #6a6b64;
+}
+.footer-links { display: flex; gap: 16px; }
+.footer-links a { font-size: 11px; }
+
+@media (max-width: 860px) {
+  .item-grid { grid-template-columns: repeat(2, 1fr); }
+}
+@media (max-width: 520px) {
+  .header { flex-direction: column; align-items: flex-start; gap: 12px; }
+  .nav { flex-wrap: wrap; }
+  .item-grid { grid-template-columns: 1fr; }
+  .wallet-row { flex-direction: column; }
+  .footer { flex-direction: column; text-align: center; }
+}
+</style>
+</head>
+<body>
+
+<header class="header">
+  <a href="https://ergentum.com" class="logo">ERGENTUM</a>
+  <div class="nav">
+    <a href="https://app.ergentum.com">Dashboard</a>
+    <a href="https://app.ergentum.com/marketplace.html">Marketplace</a>
+    <a href="https://app.ergentum.com/nodes.html">Nodes</a>
+    <a href="https://app.ergentum.com/create-bot.html">Create a bot →</a>
+    <a href="https://app.ergentum.com/register-node.html">Register a node →</a>
+    <a href="https://app.ergentum.com/my-stuff.html">My stuff</a>
+    <a href="https://ergentum.com/network">Network</a>
+  </div>
+</header>
+
+<div class="container">
+
+  <div class="page-title">My Stuff</div>
+  <div class="page-sub">View and manage the nodes and bots you registered on the network.</div>
+
+  <!-- Wallet input -->
+  <div class="wallet-box">
+    <label for="walletInput">Enter your wallet address to see your nodes and bots</label>
+    <div class="wallet-row">
+      <input type="text" id="walletInput" placeholder="addr_test1..." />
+      <button class="btn-load" id="btnLoad" onclick="loadMyStuff()">Load my stuff →</button>
+    </div>
+    <div class="wallet-security">
+      Your wallet address is only used to find your registrations. We never ask for your private keys or seed phrase.
+    </div>
+  </div>
+
+  <div id="errorBox" class="error-msg" style="display:none;"></div>
+
+  <!-- My Nodes -->
+  <div id="nodesSection" style="display:none;">
+    <div class="section-title">
+      My Nodes <span class="count" id="nodesCount"></span>
+    </div>
+    <div class="item-grid" id="nodesGrid"></div>
+    <div class="empty-state" id="nodesEmpty" style="display:none;">
+      <p>No nodes found for this address.</p>
+      <div class="empty-links">
+        <a href="https://app.ergentum.com/register-node.html">Register a node →</a>
+      </div>
+    </div>
+  </div>
+
+  <!-- My Bots -->
+  <div id="botsSection" style="display:none;">
+    <div class="section-title">
+      My Bots <span class="count" id="botsCount"></span>
+    </div>
+    <div class="item-grid" id="botsGrid"></div>
+    <div class="empty-state" id="botsEmpty" style="display:none;">
+      <p>No bots found for this address.</p>
+      <div class="empty-links">
+        <a href="https://app.ergentum.com/create-bot.html">Create a bot →</a>
+      </div>
+    </div>
+  </div>
+
+  <!-- Nothing at all -->
+  <div class="empty-state" id="nothingState" style="display:none;">
+    <p>No nodes or bots found for this address.</p>
+    <div class="empty-links">
+      <a href="https://app.ergentum.com/register-node.html">Register a node →</a>
+      <a href="https://app.ergentum.com/create-bot.html">Create a bot →</a>
+    </div>
+  </div>
+
+</div>
+
+<!-- Confirm Dialog -->
+<div class="confirm-overlay" id="confirmOverlay">
+  <div class="confirm-box">
+    <div class="confirm-title">Are you sure?</div>
+    <div class="confirm-text" id="confirmText">This cannot be undone.</div>
+    <div class="confirm-buttons">
+      <button class="btn-confirm btn-cancel" onclick="closeConfirm()">Cancel</button>
+      <button class="btn-confirm btn-danger" id="confirmDeleteBtn">Delete</button>
+    </div>
+  </div>
+</div>
+
+<!-- Footer -->
+<div class="footer">
+  <div>
+    <span>ERGENTUM</span>
+    <span style="margin-left:16px;">Agent Monetary Infrastructure · Preview Testnet · April 2026</span>
+  </div>
+  <div class="footer-links">
+    <a href="https://ergentum.com">Website</a>
+    <a href="https://github.com/Ergentum">GitHub</a>
+    <a href="https://t.me/ErgentumAI">Telegram</a>
+    <a href="https://ergentum.com/network">Network Status</a>
+  </div>
+</div>
+
+<script>
+const SUPABASE_URL = 'https://byafrpxwvrjcsqweohdf.supabase.co';
+const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJ5YWZycHh3dnJqY3Nxd2VvaGRmIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzcyOTkwNDAsImV4cCI6MjA5Mjg3NTA0MH0.OQDTtjbYLtw20dJ7wCAF3alhg0p2heUbpxVuTWJG13Y';
+
+const CONFIRM_ACTION = { type: '', table: '', id: '' };
+
+function showError(msg) {
+  const el = document.getElementById('errorBox');
+  el.textContent = msg;
+  el.style.display = 'block';
+}
+
+function hideError() {
+  document.getElementById('errorBox').style.display = 'none';
+}
+
+function fmtDate(dateStr) {
+  if (!dateStr) return '';
+  const d = new Date(dateStr);
+  return d.toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' });
+}
+
+async function loadMyStuff() {
+  const addr = document.getElementById('walletInput').value.trim();
+  if (!addr) {
+    showError('Please enter a wallet address.');
+    return;
+  }
+  hideError();
+
+  const btn = document.getElementById('btnLoad');
+  btn.disabled = true;
+  btn.textContent = 'Loading...';
+
+  document.getElementById('nodesSection').style.display = 'none';
+  document.getElementById('botsSection').style.display = 'none';
+  document.getElementById('nothingState').style.display = 'none';
+
+  try {
+    // Fetch nodes
+    const nodesResp = await fetch(
+      SUPABASE_URL + '/rest/v1/nodes?wallet_address=eq.' + encodeURIComponent(addr) + '&select=*&order=created_at.desc',
+      {
+        headers: {
+          'apikey': SUPABASE_KEY,
+          'Authorization': 'Bearer ' + SUPABASE_KEY
+        }
+      }
+    );
+    const nodes = nodesResp.ok ? await nodesResp.json() : [];
+
+    // Fetch bots
+    const botsResp = await fetch(
+      SUPABASE_URL + '/rest/v1/bots?wallet_address=eq.' + encodeURIComponent(addr) + '&select=*&order=created_at.desc',
+      {
+        headers: {
+          'apikey': SUPABASE_KEY,
+          'Authorization': 'Bearer ' + SUPABASE_KEY
+        }
+      }
+    );
+    const bots = botsResp.ok ? await botsResp.json() : [];
+
+    renderNodes(nodes || []);
+    renderBots(bots || []);
+
+    const hasNodes = nodes && nodes.length > 0;
+    const hasBots = bots && bots.length > 0;
+
+    if (!hasNodes && !hasBots) {
+      document.getElementById('nothingState').style.display = 'block';
+    } else {
+      if (hasNodes) document.getElementById('nodesSection').style.display = 'block';
+      if (hasBots) document.getElementById('botsSection').style.display = 'block';
+    }
+  } catch (e) {
+    showError('Failed to load data: ' + e.message);
+  } finally {
+    btn.disabled = false;
+    btn.textContent = 'Load my stuff →';
+  }
+}
+
+function renderNodes(nodes) {
+  const grid = document.getElementById('nodesGrid');
+  const empty = document.getElementById('nodesEmpty');
+  const count = document.getElementById('nodesCount');
+
+  if (!nodes || nodes.length === 0) {
+    grid.innerHTML = '';
+    empty.style.display = 'block';
+    count.textContent = '(0)';
+    return;
+  }
+
+  empty.style.display = 'none';
+  count.textContent = '(' + nodes.length + ')';
+
+  grid.innerHTML = nodes.map(n => `
+    <div class="item-card" data-id="${n.id}">
+      <div class="item-name">${escapeHtml(n.name || 'Unnamed Node')}</div>
+      <div class="item-badge tier-${(n.tier || 'light').toLowerCase()}">${escapeHtml(n.tier || 'Light')}</div>
+      <div class="item-detail">
+        <span><span class="label">Infrastructure:</span> ${escapeHtml(n.infrastructure || '—')}</span>
+        <span><span class="label">AI Model:</span> ${escapeHtml(n.ai_model || '—')}</span>
+      </div>
+      <div class="item-status ${(n.status || 'pending').toLowerCase()}">${escapeHtml(n.status || 'pending')}</div>
+      <div class="item-footer">
+        <span>${fmtDate(n.created_at)}</span>
+        <button class="btn-delete" onclick="confirmDelete('node', '${n.id}')">Delete node</button>
+      </div>
+    </div>
+  `).join('');
+}
+
+function renderBots(bots) {
+  const grid = document.getElementById('botsGrid');
+  const empty = document.getElementById('botsEmpty');
+  const count = document.getElementById('botsCount');
+
+  if (!bots || bots.length === 0) {
+    grid.innerHTML = '';
+    empty.style.display = 'block';
+    count.textContent = '(0)';
+    return;
+  }
+
+  empty.style.display = 'none';
+  count.textContent = '(' + bots.length + ')';
+
+  grid.innerHTML = bots.map(b => `
+    <div class="item-card" data-id="${b.id}">
+      <div class="item-name">${escapeHtml(b.name || 'Unnamed Bot')}</div>
+      <div class="item-badge bot-badge">${escapeHtml(b.category || 'General')}</div>
+      <div class="item-detail">
+        <span><span class="label">Price:</span> ${b.price ? Number(b.price).toFixed(1) + ' tADA' : '—'}</span>
+        <span><span class="label">Uses:</span> ${b.uses != null ? b.uses : '0'}</span>
+      </div>
+      <div class="item-status ${(b.status || 'active').toLowerCase()}">${escapeHtml(b.status || 'active')}</div>
+      <div class="item-footer">
+        <span>${fmtDate(b.created_at)}</span>
+        <button class="btn-delete" onclick="confirmDelete('bot', '${b.id}')">Delete bot</button>
+      </div>
+    </div>
+  `).join('');
+}
+
+function escapeHtml(str) {
+  if (!str) return '';
+  const div = document.createElement('div');
+  div.textContent = str;
+  return div.innerHTML;
+}
+
+async function confirmDelete(type, id) {
+  const overlay = document.getElementById('confirmOverlay');
+  const text = document.getElementById('confirmText');
+  const btn = document.getElementById('confirmDeleteBtn');
+
+  CONFIRM_ACTION.type = type;
+  CONFIRM_ACTION.table = type === 'node' ? 'nodes' : 'bots';
+  CONFIRM_ACTION.id = id;
+
+  text.textContent = 'Are you sure you want to delete this ' + type + '? This cannot be undone.';
+  btn.textContent = 'Delete ' + type;
+  btn.onclick = executeDelete;
+  overlay.classList.add('open');
+}
+
+function closeConfirm() {
+  document.getElementById('confirmOverlay').classList.remove('open');
+}
+
+async function executeDelete() {
+  const { type, table, id } = CONFIRM_ACTION;
+  if (!id) return;
+
+  const overlay = document.getElementById('confirmOverlay');
+  const btn = document.getElementById('confirmDeleteBtn');
+  btn.disabled = true;
+  btn.textContent = 'Deleting...';
+
+  try {
+    const resp = await fetch(
+      SUPABASE_URL + '/rest/v1/' + table + '?id=eq.' + encodeURIComponent(id),
+      {
+        method: 'DELETE',
+        headers: {
+          'apikey': SUPABASE_KEY,
+          'Authorization': 'Bearer ' + SUPABASE_KEY,
+          'Content-Type': 'application/json'
+        }
+      }
+    );
+
+    if (!resp.ok) {
+      throw new Error('Delete failed: ' + resp.status);
+    }
+
+    // Remove card from DOM
+    const card = document.querySelector('.item-card[data-id="' + id + '"]');
+    if (card) card.remove();
+
+    // Reload if empty
+    loadMyStuff();
+
+    overlay.classList.remove('open');
+  } catch (e) {
+    showError('Failed to delete: ' + e.message);
+    overlay.classList.remove('open');
+  } finally {
+    btn.disabled = false;
+  }
+}
+
+// Load on Enter key
+document.getElementById('walletInput').addEventListener('keydown', function(e) {
+  if (e.key === 'Enter') loadMyStuff();
+});
+</script>
+
+</body>
+</html>
